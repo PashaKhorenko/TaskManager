@@ -11,18 +11,29 @@ import AudioToolbox
 
 class MainViewController: UIViewController {
     
-    private let backgroundView = BackgroundForSegmentedControl()
-    private let prioritySegmentedControl = PrioritySegmentedControl(frame: CGRect(x: 0,
-                                                                                  y: 0,
-                                                                                  width: 0,
-                                                                                  height: 0))
-    private let collectionView = TasksCollectionView(frame: .zero,
-                                                     collectionViewLayout: UICollectionViewFlowLayout())
-    private let itemsPerRow: CGFloat = 1
-    private let sectionInserts = UIEdgeInsets(top: 20,
-                                              left: 20,
-                                              bottom: 20,
-                                              right: 20)
+    private let prioritySegmentedControl: UISegmentedControl = {
+        let segmentedControl = UISegmentedControl()
+        segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        segmentedControl.insertSegment(withTitle: "Low", at: 0, animated: true)
+        segmentedControl.insertSegment(withTitle: "High", at: 1, animated: true)
+        segmentedControl.insertSegment(withTitle: "Medium", at: 2, animated: true)
+        segmentedControl.insertSegment(withTitle: "Critical", at: 3, animated: true)
+        segmentedControl.selectedSegmentIndex = 0
+        return segmentedControl
+    }()
+    
+    private let collectionView: UICollectionView = {
+        let flowLayout: UICollectionViewFlowLayout = {
+            let layout = UICollectionViewFlowLayout()
+            layout.minimumInteritemSpacing = 5
+            layout.minimumLineSpacing = 10
+            layout.sectionInset = UIEdgeInsets(top: 5, left: 0, bottom: 15, right: 0)
+            return layout
+        }()
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        return collectionView
+    }()
     
     var tasksDictionary = [0: [Task](),
                            1: [Task](),
@@ -41,9 +52,7 @@ class MainViewController: UIViewController {
     // MARK: - Live Circle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.view.backgroundColor = .white
-                
+    
         setupNavigationBar()
         setupViews()
         setConstreints()
@@ -53,11 +62,11 @@ class MainViewController: UIViewController {
         loadTasks()
         
         // Drag & Drop
-        let longPressGesture = UILongPressGestureRecognizer(
-            target: self,
-            action: #selector(handleLongPressGesture)
-        )
-        collectionView.addGestureRecognizer(longPressGesture)
+//        let longPressGesture = UILongPressGestureRecognizer(
+//            target: self,
+//            action: #selector(handleLongPressGesture)
+//        )
+//        collectionView.addGestureRecognizer(longPressGesture)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,28 +91,28 @@ class MainViewController: UIViewController {
     // MARK: ----------------------------
     
     // Drag & Drop
-    @objc private func handleLongPressGesture(_ gesture: UILongPressGestureRecognizer) {
-        
-        let gestureLocation = gesture.location(in: collectionView)
-        
-        switch gesture.state {
-        case .began:
-            
-            AudioServicesPlaySystemSound(SystemSoundID(1004))
-            
-            guard let targetIndexPath = collectionView.indexPathForItem(at: gestureLocation) else {
-                return
-            }
-            collectionView.beginInteractiveMovementForItem(at: targetIndexPath)
-        case .changed:
-            collectionView.updateInteractiveMovementTargetPosition(gestureLocation)
-        case .ended:
-            AudioServicesPlaySystemSound(SystemSoundID(1003))
-            collectionView.endInteractiveMovement()
-        default:
-            collectionView.cancelInteractiveMovement()
-        }
-    }
+//    @objc private func handleLongPressGesture(_ gesture: UILongPressGestureRecognizer) {
+//
+//        let gestureLocation = gesture.location(in: collectionView)
+//
+//        switch gesture.state {
+//        case .began:
+//
+//            AudioServicesPlaySystemSound(SystemSoundID(1004))
+//
+//            guard let targetIndexPath = collectionView.indexPathForItem(at: gestureLocation) else {
+//                return
+//            }
+//            collectionView.beginInteractiveMovementForItem(at: targetIndexPath)
+//        case .changed:
+//            collectionView.updateInteractiveMovementTargetPosition(gestureLocation)
+//        case .ended:
+//            AudioServicesPlaySystemSound(SystemSoundID(1003))
+//            collectionView.endInteractiveMovement()
+//        default:
+//            collectionView.cancelInteractiveMovement()
+//        }
+//    }
     
     private func setupNavigationBar() {
         self.navigationController?.navigationBar.prefersLargeTitles = true
@@ -121,9 +130,16 @@ class MainViewController: UIViewController {
     }
     
     private func setupViews() {
-        view.addSubview(backgroundView)
-        backgroundView.addSubview(prioritySegmentedControl)
+        self.view.backgroundColor = .white
+        
+//        view.addSubview(backgroundView)
+//        backgroundView.addSubview(prioritySegmentedControl)
+//        view.addSubview(prioritySegmentedControl)
+        
         view.addSubview(collectionView)
+        
+        collectionView.register(TasksCollectionViewCell.self, forCellWithReuseIdentifier: "TaskCell")
+        collectionView.register(HeaderForSection.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderForSection")
         
         self.prioritySegmentedControl.addTarget(self, action: #selector(changedPriority(_:)), for: .valueChanged)
     }
@@ -143,40 +159,60 @@ class MainViewController: UIViewController {
 
 extension MainViewController: UICollectionViewDataSource {
     
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        tasksDictionary.count
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let priorityKey = prioritySegmentedControl.selectedSegmentIndex
-        
-        return tasksDictionary[priorityKey]!.count
+//        let priorityKey = prioritySegmentedControl.selectedSegmentIndex
+//
+//        return tasksDictionary[priorityKey]!.count
+//
+        guard let count = tasksDictionary[section]?.count else {
+            return 0
+        }
+        return count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
                 
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: IdCell.idTaskCell.rawValue, for: indexPath) as? TasksCollectionViewCell else { return UICollectionViewCell()}
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TaskCell", for: indexPath) as? TasksCollectionViewCell else { return UICollectionViewCell()}
         
-        let priorityKey = prioritySegmentedControl.selectedSegmentIndex
-        let task = tasksDictionary[priorityKey]![indexPath.item]
+//        let priorityKey = prioritySegmentedControl.selectedSegmentIndex
+//        let task = tasksDictionary[indexPath.section]?[indexPath.item]
         
+        guard let task = tasksDictionary[indexPath.section]?[indexPath.item] else {
+            return UICollectionViewCell()
+        }
+
         let startDate = task.startDate
         let deadlineDate = task.deadLineDate
-        
+
         let completionStatus = task.isCompleted
         let imageName = completionStatus ? "checkmark.circle" : "circle"
         let image = UIImage(systemName: imageName)
-        
+
         cell.titleLabel.text = task.title
         cell.descriptionLabel.text = task.description
         cell.timeIntervalLabel.text = "\(startDate) - \(deadlineDate)"
         cell.completedButton.setImage(image, for: .normal)
         cell.completedButton.tag = indexPath.item
         cell.completedButton.addTarget(self, action: #selector(changeStatus(_:)), for: .touchUpInside)
-        
+
         if completionStatus == true {
             cell.contentView.backgroundColor = #colorLiteral(red: 0.721568644, green: 0.8862745166, blue: 0.5921568871, alpha: 1)
         } else {
             cell.contentView.backgroundColor = #colorLiteral(red: 1, green: 0.831372549, blue: 0.4745098039, alpha: 1)
         }
-        
+
         return cell
+        
+//        let task = tasksDictionary[indexPath.section]?[indexPath.row]
+//
+//        cell.titleLabel.text = task?.title
+//
+//        return cell
+        
     }
     
     @objc func changeStatus(_ sender: UIButton) {
@@ -204,9 +240,79 @@ extension MainViewController: UICollectionViewDataSource {
 
 extension MainViewController: UICollectionViewDelegate {
     
+    // Header for section CollectionView
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        
+        var titleLabelText: String = ""
+        
+        switch indexPath.section {
+        case 0:
+            titleLabelText = "Tasks with Low Priority"
+        case 1:
+            titleLabelText = "Tasks with Medium Priority"
+        case 2:
+            titleLabelText = "Tasks with High Priority"
+        case 3:
+            titleLabelText = "Tasks with Critical Priority"
+        default:
+            titleLabelText = "Another Priority"
+        }
+        
+        switch kind {
+        case UICollectionView.elementKindSectionHeader:
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeaderForSection", for: indexPath) as! HeaderForSection
+            
+            headerView.headerForSetion.text = titleLabelText
+            return headerView
+            
+        default:
+            assert(false, "Unexpected element kind")
+        }
+    }
+    
+    // Size for header
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width,
+                      height: 20)
+    }
+    
+    //contextMenu for collectionView
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        let sectionIndex = indexPaths.first?[0]
+        let taskIndex = indexPaths.first?[1]
+//        print("section: \(sectionIndex), item: \(taskIndex)")
+        
+        if sectionIndex != nil && taskIndex != nil {
+            
+            let task = tasksDictionary[sectionIndex!]?[taskIndex!]
+//            print(task?.title)
+            
+            return UIContextMenuConfiguration(actionProvider:  { suggestedActions in
+                return UIMenu(children: [
+                    UIAction(title: "Edit", image: UIImage(systemName: "highlighter")) { _ in
+                        /* Implement the action. */
+                        print("Edit task wiht title \(task?.title ?? "––")")
+                    },
+                    UIAction(title: "Drag and Drop", image: UIImage(systemName: "arrow.triangle.branch"), handler: { _ in
+                        /* Implement the action. */
+                        print("Drag and Drop task wiht title \(task?.title ?? "––")")
+                    }),
+                    UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+                        /* Implement the action. */
+                        print("Delete task wiht title \(task?.title ?? "––")")
+                    }
+                ])
+            })
+        }
+        
+        return UIContextMenuConfiguration()
+    }
+    
     // Short pressure
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        showActionSheet(didSelectItemAt: indexPath)
+//        showActionSheet(didSelectItemAt: indexPath)
+        print(indexPath)
     }
     
     private func showActionSheet(didSelectItemAt indexPath: IndexPath) {
@@ -284,24 +390,12 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
     // размер ячейки
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let paddingWidth = sectionInserts.left * (itemsPerRow + 1)
-        let aveilebleWidth = collectionView.frame.width - paddingWidth
-        let widthPerItem = aveilebleWidth / itemsPerRow
+//        let paddingWidth = 20 * (itemsPerRow + 1)
+//        let aveilebleWidth = collectionView.frame.width - paddingWidth
+//        let widthPerItem = aveilebleWidth / itemsPerRow
         
-        return CGSize(width: widthPerItem, height: widthPerItem / 2)
-    }
-    
-    // внешние стступы секции
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return sectionInserts
-    }
-    
-    // отступы внутри секции
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return sectionInserts.top
-    }
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return sectionInserts.top
+        return CGSize(width: collectionView.bounds.width - 20,
+                      height: collectionView.bounds.width / 2)
     }
 }
 
@@ -312,20 +406,11 @@ extension MainViewController {
     
     private func setConstreints() {
         NSLayoutConstraint.activate([
-            backgroundView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            backgroundView.heightAnchor.constraint(equalToConstant: 70)
-        ])
-        
-        NSLayoutConstraint.activate([
-            prioritySegmentedControl.leadingAnchor.constraint(equalTo: backgroundView.leadingAnchor, constant: 10),
-            prioritySegmentedControl.trailingAnchor.constraint(equalTo: backgroundView.trailingAnchor, constant: -10),
-            prioritySegmentedControl.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor)
-        ])
-        
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: backgroundView.bottomAnchor, constant: 5),
+//            prioritySegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+//            prioritySegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+//            prioritySegmentedControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10)
