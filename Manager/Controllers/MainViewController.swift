@@ -22,15 +22,18 @@ class MainViewController: UIViewController {
         return segmentedControl
     }()
     
-    private let collectionView: UICollectionView = {
+    private let tasksCollectionView: UICollectionView = {
         let flowLayout: UICollectionViewFlowLayout = {
             let layout = UICollectionViewFlowLayout()
             layout.minimumInteritemSpacing = 5
             layout.minimumLineSpacing = 10
-            layout.sectionInset = UIEdgeInsets(top: 5, left: 0, bottom: 15, right: 0)
+            layout.sectionInset = UIEdgeInsets(top: 3, left: 0, bottom: 5, right: 0)
             return layout
         }()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+//        collectionView.backgroundColor = .green
+//        collectionView.layer.cornerRadius = 15
+        collectionView.backgroundColor = nil
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
@@ -44,6 +47,8 @@ class MainViewController: UIViewController {
             storage.save(tasks: tasksDictionary[1]!, forKey: "medium")
             storage.save(tasks: tasksDictionary[2]!, forKey: "high")
             storage.save(tasks: tasksDictionary[3]!, forKey: "critical")
+            
+            self.tasksCollectionView.reloadData()
         }
     }
     
@@ -72,7 +77,7 @@ class MainViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.collectionView.reloadData()
+        self.tasksCollectionView.reloadData()
     }
     
     private func loadTasks() {
@@ -130,27 +135,27 @@ class MainViewController: UIViewController {
     }
     
     private func setupViews() {
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = #colorLiteral(red: 0.9197917581, green: 0.9297400713, blue: 0.9295648932, alpha: 1)
         
 //        view.addSubview(backgroundView)
 //        backgroundView.addSubview(prioritySegmentedControl)
 //        view.addSubview(prioritySegmentedControl)
         
-        view.addSubview(collectionView)
+        view.addSubview(tasksCollectionView)
         
-        collectionView.register(TasksCollectionViewCell.self, forCellWithReuseIdentifier: "TaskCell")
-        collectionView.register(HeaderForSection.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderForSection")
+        tasksCollectionView.register(TasksCollectionViewCell.self, forCellWithReuseIdentifier: "TaskCell")
+        tasksCollectionView.register(HeaderForSection.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderForSection")
         
         self.prioritySegmentedControl.addTarget(self, action: #selector(changedPriority(_:)), for: .valueChanged)
     }
     
     @objc private func changedPriority(_ sender: UISegmentedControl) {
-        self.collectionView.reloadData()
+        self.tasksCollectionView.reloadData()
     }
     
     private func setDelegates() {
-        collectionView.dataSource = self
-        collectionView.delegate = self
+        tasksCollectionView.dataSource = self
+        tasksCollectionView.delegate = self
     }
 }
 
@@ -203,6 +208,7 @@ extension MainViewController: UICollectionViewDataSource {
             cell.contentView.backgroundColor = #colorLiteral(red: 0.721568644, green: 0.8862745166, blue: 0.5921568871, alpha: 1)
         } else {
             cell.contentView.backgroundColor = #colorLiteral(red: 1, green: 0.831372549, blue: 0.4745098039, alpha: 1)
+//            cell.contentView.backgroundColor = .white
         }
 
         return cell
@@ -231,7 +237,7 @@ extension MainViewController: UICollectionViewDataSource {
             tasksDictionary[priorityKey]!.append(task)
         }
         
-        self.collectionView.reloadData()
+        self.tasksCollectionView.reloadData()
     }
 }
 
@@ -239,6 +245,13 @@ extension MainViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegate
 
 extension MainViewController: UICollectionViewDelegate {
+    
+    // Short pressure
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        showActionSheet(didSelectItemAt: indexPath)
+        print(indexPath)
+    }
+    
     
     // Header for section CollectionView
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -281,106 +294,117 @@ extension MainViewController: UICollectionViewDelegate {
         
         let sectionIndex = indexPaths.first?[0]
         let taskIndex = indexPaths.first?[1]
-//        print("section: \(sectionIndex), item: \(taskIndex)")
         
-        if sectionIndex != nil && taskIndex != nil {
-            
-            let task = tasksDictionary[sectionIndex!]?[taskIndex!]
-//            print(task?.title)
-            
-            return UIContextMenuConfiguration(actionProvider:  { suggestedActions in
-                return UIMenu(children: [
-                    UIAction(title: "Edit", image: UIImage(systemName: "highlighter")) { _ in
-                        /* Implement the action. */
-                        print("Edit task wiht title \(task?.title ?? "––")")
-                    },
-                    UIAction(title: "Drag and Drop", image: UIImage(systemName: "arrow.triangle.branch"), handler: { _ in
-                        /* Implement the action. */
-                        print("Drag and Drop task wiht title \(task?.title ?? "––")")
-                    }),
-                    UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                        /* Implement the action. */
-                        print("Delete task wiht title \(task?.title ?? "––")")
-                    }
-                ])
-            })
+        guard sectionIndex != nil && taskIndex != nil else {
+            return UIContextMenuConfiguration()
         }
         
-        return UIContextMenuConfiguration()
+        return UIContextMenuConfiguration(actionProvider:  { suggestedActions in
+            return UIMenu(children: [
+                UIAction(title: "Edit", image: UIImage(systemName: "highlighter")) { _ in
+                    /* Implement the action. */
+                    self.setupEditButton(sectionIndex!, taskIndex!)
+                },
+                UIAction(title: "Drag and Drop", image: UIImage(systemName: "arrow.triangle.branch"), handler: { _ in
+                    /* Implement the action. */
+                    self.setupDragAndDropButton(sectionIndex!, taskIndex!)
+                }),
+                UIAction(title: "Remove", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+                    /* Implement the action. */
+                    self.setupRemoveButton(sectionIndex!, taskIndex!)
+                }
+            ])
+        })
     }
     
-    // Short pressure
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        showActionSheet(didSelectItemAt: indexPath)
-        print(indexPath)
+    
+    func setupEditButton(_ sectionIndex: Int, _ taskIndex: Int) {
+        let task = tasksDictionary[sectionIndex]?[taskIndex]
+        
+        print("Edit task with title \(task?.title ?? "––")")
     }
     
-    private func showActionSheet(didSelectItemAt indexPath: IndexPath) {
-        let alertController = UIAlertController(title: "Choose an action for this task", message: nil, preferredStyle: .actionSheet)
+    func setupDragAndDropButton(_ sectionIndex: Int, _ taskIndex: Int) {
+        let task = tasksDictionary[sectionIndex]?[taskIndex]
         
-        let editAction = UIAlertAction(title: "Edit Task", style: .default) { action in
-            self.setupEditTaskButtonForActionSheet(indexPath)
-        }
-        let deleteAction = UIAlertAction(title: "Delete Task", style: .destructive) { action in
-            self.setupDeleteTaskButtonForActionSheet(indexPath)
-        }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addAction(editAction)
-        alertController.addAction(deleteAction)
-        alertController.addAction(cancelAction)
-        
-        present(alertController, animated: true, completion: nil)
+        print("Drag and Drop task with title \(task?.title ?? "––")")
     }
     
-    private func setupEditTaskButtonForActionSheet(_ indexPath: IndexPath) {
-        let priorityKey = prioritySegmentedControl.selectedSegmentIndex
+    func setupRemoveButton(_ sectionIndex: Int, _ taskIndex: Int) {
+        let task = tasksDictionary[sectionIndex]?[taskIndex]
         
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd.MM.yyyy, HH:mm"
+        print("Remove task with title \(task?.title ?? "––")")
         
-        let taskStartDateString = tasksDictionary[priorityKey]![indexPath.item].startDate
-        let taskDeadlineDateString = tasksDictionary[priorityKey]![indexPath.item].deadLineDate
-        
-        let taskTitle = tasksDictionary[priorityKey]![indexPath.item].title
-        let taskStartDate = formatter.date(from: taskStartDateString)
-        let taskDeadlineDate = formatter.date(from: taskDeadlineDateString)
-        let taskPrioriry = tasksDictionary[priorityKey]![indexPath.item].priority
-        let taskDescription = tasksDictionary[priorityKey]![indexPath.item].description
-        let isCompleted = tasksDictionary[priorityKey]![indexPath.item].isCompleted
-                
-        let createTaskVC = CreateTaskViewController()
-        
-        createTaskVC.taskTitleTextField.text = taskTitle
-        createTaskVC.startDatePicker.date = taskStartDate ?? .now
-        createTaskVC.deadlineDatePicker.date = taskDeadlineDate ?? .now
-        createTaskVC.prioritySegmentedControl.selectedSegmentIndex = taskPrioriry
-        createTaskVC.descriptionTextView.text = taskDescription
-        
-        createTaskVC.isCompleted = isCompleted
-        createTaskVC.priorityKeyForEditing = priorityKey
-        createTaskVC.indexPathForEditing = indexPath.item
-        createTaskVC.createTaskButton.tag = 2
-        
-        self.navigationController?.pushViewController(createTaskVC, animated: true)
+        tasksDictionary[sectionIndex]?.remove(at: taskIndex)
     }
     
-    private func setupDeleteTaskButtonForActionSheet(_ indexPath: IndexPath) {
-        let priorityKey = prioritySegmentedControl.selectedSegmentIndex
-        
-        tasksDictionary[priorityKey]!.remove(at: indexPath.item)
-        
-        self.collectionView.reloadData()
-    }
+    
+//    private func showActionSheet(didSelectItemAt indexPath: IndexPath) {
+//        let alertController = UIAlertController(title: "Choose an action for this task", message: nil, preferredStyle: .actionSheet)
+//
+//        let editAction = UIAlertAction(title: "Edit Task", style: .default) { action in
+//            self.setupEditTaskButtonForActionSheet(indexPath)
+//        }
+//        let deleteAction = UIAlertAction(title: "Delete Task", style: .destructive) { action in
+//            self.setupDeleteTaskButtonForActionSheet(indexPath)
+//        }
+//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+//
+//        alertController.addAction(editAction)
+//        alertController.addAction(deleteAction)
+//        alertController.addAction(cancelAction)
+//
+//        present(alertController, animated: true, completion: nil)
+//    }
+    
+//    private func setupEditTaskButtonForActionSheet(_ indexPath: IndexPath) {
+//        let priorityKey = prioritySegmentedControl.selectedSegmentIndex
+//
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "dd.MM.yyyy, HH:mm"
+//
+//        let taskStartDateString = tasksDictionary[priorityKey]![indexPath.item].startDate
+//        let taskDeadlineDateString = tasksDictionary[priorityKey]![indexPath.item].deadLineDate
+//
+//        let taskTitle = tasksDictionary[priorityKey]![indexPath.item].title
+//        let taskStartDate = formatter.date(from: taskStartDateString)
+//        let taskDeadlineDate = formatter.date(from: taskDeadlineDateString)
+//        let taskPrioriry = tasksDictionary[priorityKey]![indexPath.item].priority
+//        let taskDescription = tasksDictionary[priorityKey]![indexPath.item].description
+//        let isCompleted = tasksDictionary[priorityKey]![indexPath.item].isCompleted
+//
+//        let createTaskVC = CreateTaskViewController()
+//
+//        createTaskVC.taskTitleTextField.text = taskTitle
+//        createTaskVC.startDatePicker.date = taskStartDate ?? .now
+//        createTaskVC.deadlineDatePicker.date = taskDeadlineDate ?? .now
+//        createTaskVC.prioritySegmentedControl.selectedSegmentIndex = taskPrioriry
+//        createTaskVC.descriptionTextView.text = taskDescription
+//
+//        createTaskVC.isCompleted = isCompleted
+//        createTaskVC.priorityKeyForEditing = priorityKey
+//        createTaskVC.indexPathForEditing = indexPath.item
+//        createTaskVC.createTaskButton.tag = 2
+//
+//        self.navigationController?.pushViewController(createTaskVC, animated: true)
+//    }
+    
+//    private func setupDeleteTaskButtonForActionSheet(_ indexPath: IndexPath) {
+//        let priorityKey = prioritySegmentedControl.selectedSegmentIndex
+//
+//        tasksDictionary[priorityKey]!.remove(at: indexPath.item)
+//
+//        self.collectionView.reloadData()
+//    }
     
     // Long pressure (drag & drop)
-    func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        
-        let priorityKey = prioritySegmentedControl.selectedSegmentIndex
-        
-        let task = tasksDictionary[priorityKey]!.remove(at: sourceIndexPath.item)
-        tasksDictionary[priorityKey]!.insert(task, at: destinationIndexPath.item)
-    }
+//    func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+//
+//        let priorityKey = prioritySegmentedControl.selectedSegmentIndex
+//
+//        let task = tasksDictionary[priorityKey]!.remove(at: sourceIndexPath.item)
+//        tasksDictionary[priorityKey]!.insert(task, at: destinationIndexPath.item)
+//    }
 }
 
 
@@ -394,8 +418,8 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
 //        let aveilebleWidth = collectionView.frame.width - paddingWidth
 //        let widthPerItem = aveilebleWidth / itemsPerRow
         
-        return CGSize(width: collectionView.bounds.width - 20,
-                      height: collectionView.bounds.width / 2)
+        CGSize(width: collectionView.bounds.width - 20,
+               height: collectionView.bounds.width / 2)
     }
 }
 
@@ -410,10 +434,10 @@ extension MainViewController {
 //            prioritySegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 //            prioritySegmentedControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
 
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10)
+            tasksCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            tasksCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5),
+            tasksCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
+            tasksCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
 }

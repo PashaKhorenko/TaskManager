@@ -29,9 +29,9 @@ class TasksCollectionViewCell: UICollectionViewCell {
     }
     
     private func setupViews() {
-        contentView.layer.cornerRadius = 10
-        contentView.layer.borderColor = UIColor.systemGray.cgColor
-        contentView.layer.borderWidth = 2
+        contentView.layer.cornerRadius = 15
+//        contentView.layer.borderColor = UIColor.systemGray.cgColor
+//        contentView.layer.borderWidth = 2
         
         addSubview(titleLabel)
         addSubview(firstDemarcationLine)
@@ -53,37 +53,27 @@ extension TasksCollectionViewCell {
             descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor,constant: 10),
             descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
             descriptionLabel.topAnchor.constraint(equalTo: firstDemarcationLine.bottomAnchor,constant: 5),
-            descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: secondDemarcationLine.topAnchor, constant: -5)
-        ])
-        
-        NSLayoutConstraint.activate([
+            descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: secondDemarcationLine.topAnchor, constant: -5),
+            
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor,constant: 10),
             titleLabel.trailingAnchor.constraint(equalTo: completedButton.leadingAnchor, constant: -10),
-            titleLabel.topAnchor.constraint(equalTo: topAnchor,constant: 7)
-        ])
-        
-        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: topAnchor,constant: 7),
+            
             completedButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
             completedButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
             completedButton.widthAnchor.constraint(equalToConstant: 30),
-            completedButton.heightAnchor.constraint(equalToConstant: 30)
-        ])
-        
-        NSLayoutConstraint.activate([
+            completedButton.heightAnchor.constraint(equalToConstant: 30),
+            
             firstDemarcationLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
             firstDemarcationLine.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
             firstDemarcationLine.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
-            firstDemarcationLine.heightAnchor.constraint(equalToConstant: 2)
-        ])
-        
-        NSLayoutConstraint.activate([
+            firstDemarcationLine.heightAnchor.constraint(equalToConstant: 2),
+            
             secondDemarcationLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
             secondDemarcationLine.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
             secondDemarcationLine.bottomAnchor.constraint(equalTo: timeIntervalLabel.topAnchor, constant: -5),
-            secondDemarcationLine.heightAnchor.constraint(equalToConstant: 2)
-        ])
-        
-        NSLayoutConstraint.activate([
+            secondDemarcationLine.heightAnchor.constraint(equalToConstant: 2),
+            
             timeIntervalLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
             timeIntervalLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
             timeIntervalLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -7)
