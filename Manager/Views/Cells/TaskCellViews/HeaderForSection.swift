@@ -12,8 +12,7 @@ class HeaderForSection: UICollectionReusableView {
     let headerForSetion: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "HelveticaNeue-Bold", size: 19)
-        label.textColor = .secondaryLabel
-//        label.backgroundColor = .yellow
+        label.textColor = #colorLiteral(red: 0, green: 0.392432034, blue: 0.4122602344, alpha: 1)
         label.text = "Tasks with Low Prioriti"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -33,7 +32,6 @@ class HeaderForSection: UICollectionReusableView {
     }
     
     func setupViews() {
-//        backgroundColor = UIColor.purple
         addSubview(headerForSetion)
     }
     

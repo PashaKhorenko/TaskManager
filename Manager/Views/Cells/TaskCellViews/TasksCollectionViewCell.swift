@@ -10,12 +10,28 @@ import UIKit
 
 class TasksCollectionViewCell: UICollectionViewCell {
     
-    var titleLabel = CellTitleLabel()
-    var firstDemarcationLine = DemarcationLine()
-    var descriptionLabel = CellDescriptionLabel()
-    var secondDemarcationLine = DemarcationLine()
-    var timeIntervalLabel = CellTimeIntervalLabel()
-    var completedButton = CompletedButton()
+    var titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "HelveticaNeue-Bold", size: 21)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    var descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "HelveticaNeue", size: 17)
+        label.numberOfLines = 4
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    var timeIntervalLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "HelveticaNeue", size: 16)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    let firstDemarcationLine = DemarcationLine()
+    let secondDemarcationLine = DemarcationLine()
         
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -30,15 +46,17 @@ class TasksCollectionViewCell: UICollectionViewCell {
     
     private func setupViews() {
         contentView.layer.cornerRadius = 15
-//        contentView.layer.borderColor = UIColor.systemGray.cgColor
-//        contentView.layer.borderWidth = 2
+        layer.shadowColor = UIColor.gray.cgColor
+        layer.shadowOffset = CGSize(width: 0, height: 2.0)
+        layer.shadowRadius = 3.5
+        layer.shadowOpacity = 0.5
+        layer.masksToBounds = false
         
         addSubview(titleLabel)
         addSubview(firstDemarcationLine)
         addSubview(descriptionLabel)
         addSubview(secondDemarcationLine)
         addSubview(timeIntervalLabel)
-        addSubview(completedButton)
     }
 }
 
@@ -55,15 +73,10 @@ extension TasksCollectionViewCell {
             descriptionLabel.topAnchor.constraint(equalTo: firstDemarcationLine.bottomAnchor,constant: 5),
             descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: secondDemarcationLine.topAnchor, constant: -5),
             
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor,constant: 10),
-            titleLabel.trailingAnchor.constraint(equalTo: completedButton.leadingAnchor, constant: -10),
             titleLabel.topAnchor.constraint(equalTo: topAnchor,constant: 7),
-            
-            completedButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            completedButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            completedButton.widthAnchor.constraint(equalToConstant: 30),
-            completedButton.heightAnchor.constraint(equalToConstant: 30),
-            
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor,constant: 10),
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+
             firstDemarcationLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
             firstDemarcationLine.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
             firstDemarcationLine.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),

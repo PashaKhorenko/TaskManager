@@ -20,8 +20,8 @@ class DemarcationLine: UIView {
     }
     
     private func configure() {
-        backgroundColor = .systemGray
-        layer.cornerRadius = self.frame.height / 2
+        backgroundColor = #colorLiteral(red: 0.01568627451, green: 0.3215686275, blue: 0.337254902, alpha: 1)
+        layer.cornerRadius = self.frame.height / 2.5
         translatesAutoresizingMaskIntoConstraints = false
     }
 }

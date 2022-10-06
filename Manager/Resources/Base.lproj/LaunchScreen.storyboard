@@ -24,20 +24,12 @@
                                     <constraint firstAttribute="height" constant="240" id="oyQ-Zh-sdN"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="To–Do Manager" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EGb-h8-uzE">
-                                <rect key="frame" x="60" y="167" width="270.33333333333331" height="48"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="aZW-e8-klX" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="74o-RY-r2I"/>
-                            <constraint firstItem="EGb-h8-uzE" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="120" id="NPC-ya-sUm"/>
                             <constraint firstItem="aZW-e8-klX" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="XrJ-fL-g6s"/>
-                            <constraint firstItem="EGb-h8-uzE" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="t32-D7-EUV"/>
                         </constraints>
                     </view>
                 </viewController>

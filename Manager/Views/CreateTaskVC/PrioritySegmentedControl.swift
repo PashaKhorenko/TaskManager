@@ -20,13 +20,11 @@ class PrioritySegmentedControl: UISegmentedControl {
     }
     
     private func configure() {
-        insertSegment(withTitle: "Low", at: 0, animated: true)
-        insertSegment(withTitle: "Medium", at: 1, animated: true)
-        insertSegment(withTitle: "High", at: 2, animated: true)
-        insertSegment(withTitle: "Critical", at: 3, animated: true)
-        
+        insertSegment(withTitle: "Critical", at: 0, animated: true)
+        insertSegment(withTitle: "High", at: 1, animated: true)
+        insertSegment(withTitle: "Medium", at: 2, animated: true)
+        insertSegment(withTitle: "Low", at: 3, animated: true)
         selectedSegmentIndex = 0
-        
         translatesAutoresizingMaskIntoConstraints = false
     }
 }
