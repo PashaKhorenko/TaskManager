@@ -1,14 +1,14 @@
 //
-//  DeadlineDatePicker.swift
+//  CustomDatePicker.swift
 //  Manager
 //
-//  Created by Pasha Khorenko on 07.05.2022.
+//  Created by Паша Хоренко on 06.10.2022.
 //
 
-import Foundation
 import UIKit
 
-class DeadlineDatePicker: UIDatePicker {
+class CustomDatePicker: UIDatePicker {
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         

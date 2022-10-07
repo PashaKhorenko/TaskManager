@@ -22,12 +22,11 @@ class DescriptionTextView: UITextView, UITextViewDelegate {
     
     private func configure() {
         tag = 3
-        layer.cornerRadius = 10
+        layer.cornerRadius = 5
         layer.borderWidth = 2
         layer.borderColor = UIColor.systemGray.cgColor
-        
+        backgroundColor = #colorLiteral(red: 0.9435634613, green: 0.9468396306, blue: 0.949968636, alpha: 1)
         font = UIFont.systemFont(ofSize: 17)
-        
         translatesAutoresizingMaskIntoConstraints = false
     }
 }

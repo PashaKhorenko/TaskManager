@@ -9,17 +9,54 @@ import UIKit
 
 class CreateTaskViewController: UIViewController, UITextViewDelegate {
     
-    private let titleLabel = TitleLabel()
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Task Title"
+        label.font = UIFont(name: "HelveticaNeue", size: 20)
+        label.tintColor = .black
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    private let deadlineDateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Deadline"
+        label.font = UIFont(name: "HelveticaNeue", size: 20)
+        label.tintColor = .black
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    private let priorityLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Priority"
+        label.font = UIFont(name: "HelveticaNeue", size: 20)
+        label.tintColor = .black
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    private let descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Description"
+        label.font = UIFont(name: "HelveticaNeue", size: 20)
+        label.tintColor = .black
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    let createTaskButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.tag = 1
+        button.setTitle("Create Task", for: .normal)
+        button.backgroundColor = .systemBlue
+        button.tintColor = .white
+        button.layer.cornerRadius = 10
+        button.titleLabel?.font = UIFont(name: "HelveticaNeue-Bold", size: 23)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     let taskTitleTextField = TaskTitleTextField()
-    private let statrDateLabel = StartDateLabel()
-    let startDatePicker = StartDatePicker()
-    private let deadlineDateLabel = DeadlineDaneLabel()
-    let deadlineDatePicker = DeadlineDatePicker()
-    private let priorityLabel = PriorityLabel()
-    let prioritySegmentedControl = PrioritySegmentedControl(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-    private let descriptionLabel = DescriptionLabel()
-    let createTaskButton = CreateTaskButton()
     let descriptionTextView = DescriptionTextView()
+    let deadlineDatePicker = CustomDatePicker()
+    let prioritySegmentedControl = PrioritySegmentedControl(frame: .zero)
     
     var priorityKeyForEditing: Int? = nil
     var indexPathForEditing: Int? = nil
@@ -30,15 +67,10 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.view.backgroundColor = .white
-        
-        setupNavigationBar()
+                
         setupViews()
         setConstreints()
-        setDelegates()
         
-        addKeyboardObservers()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,20 +81,18 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        removeKeyboardObservers()
-    }
-    
     
     // MARK: - Setup Views
     
     private func setupViews() {
+        self.view.backgroundColor = .white
+        self.navigationItem.largeTitleDisplayMode = .never
+        self.navigationItem.title = "Create Task"
+        
+        descriptionTextView.delegate = self
+        
         view.addSubview(titleLabel)
         view.addSubview(taskTitleTextField)
-        view.addSubview(statrDateLabel)
-        view.addSubview(startDatePicker)
         view.addSubview(deadlineDateLabel)
         view.addSubview(deadlineDatePicker)
         view.addSubview(priorityLabel)
@@ -73,16 +103,6 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         
         self.createTaskButton.addTarget(self, action: #selector(createTaskButtonTapped), for: .touchUpInside)
     }
-    
-    private func setupNavigationBar() {
-        self.navigationItem.largeTitleDisplayMode = .never
-        self.navigationItem.title = "Create Task"
-    }
-    
-    private func setDelegates() {
-        descriptionTextView.delegate = self
-    }
-    
     
     // MARK: - createTaskButton Action
 
@@ -99,16 +119,13 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy, HH:mm"
-        let startDateString = formatter.string(from: startDatePicker.date)
+        
         let deadlineDateString = formatter.string(from: deadlineDatePicker.date)
-        
         let prioritiKey = prioritySegmentedControl.selectedSegmentIndex
-        
         let descriptionText = descriptionTextView.text.trimmingCharacters(in: .whitespaces)
         
         let newTask = Task(isCompleted: isCompleted,
                            title: titleText,
-                           startDate: startDateString,
                            deadLineDate: deadlineDateString,
                            priority: prioritiKey,
                            description: descriptionText)
@@ -155,32 +172,6 @@ extension CreateTaskViewController {
         
         self.view.endEditing(true)
     }
-    
-    private func addKeyboardObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    private func removeKeyboardObservers() {
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    @objc private func keyboardWillShow(notification: Notification) {
-        guard let userInfo = notification.userInfo else { return }
-        
-        guard let keyboardSize = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
-        
-        if self.view.frame.origin.y == 0 {
-            self.view.frame.origin.y -= keyboardSize.height
-        }
-    }
-    
-    @objc private func keyboardWillHide(notification: Notification) {
-        if self.view.frame.origin.y != 0 {
-            self.view.frame.origin.y = 0
-        }
-    }
 }
 
 
@@ -191,64 +182,38 @@ extension CreateTaskViewController {
     private func setConstreints() {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
-        ])
-        
-        NSLayoutConstraint.activate([
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
             taskTitleTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
             taskTitleTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            taskTitleTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
-        ])
-        
-        NSLayoutConstraint.activate([
-            statrDateLabel.topAnchor.constraint(equalTo: taskTitleTextField.bottomAnchor, constant: 40),
-            statrDateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
-        ])
-        
-        NSLayoutConstraint.activate([
-            startDatePicker.centerYAnchor.constraint(equalTo: statrDateLabel.centerYAnchor),
-            startDatePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
-        ])
-        
-        NSLayoutConstraint.activate([
-            deadlineDateLabel.topAnchor.constraint(equalTo: statrDateLabel.bottomAnchor, constant: 25),
-            deadlineDateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
-        ])
-        
-        NSLayoutConstraint.activate([
+            taskTitleTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
+            descriptionLabel.topAnchor.constraint(equalTo: taskTitleTextField.bottomAnchor, constant: 25),
+            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
+            descriptionTextView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20),
+            descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            descriptionTextView.heightAnchor.constraint(equalToConstant: view.frame.width * 0.5),
+            
+            deadlineDateLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 25),
+            deadlineDateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
             deadlineDatePicker.centerYAnchor.constraint(equalTo: deadlineDateLabel.centerYAnchor),
-            deadlineDatePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
-        ])
-        
-        NSLayoutConstraint.activate([
+            deadlineDatePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
             priorityLabel.topAnchor.constraint(equalTo: deadlineDateLabel.bottomAnchor, constant: 40),
-            priorityLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
-        ])
-        
-        NSLayoutConstraint.activate([
+            priorityLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
             prioritySegmentedControl.topAnchor.constraint(equalTo: priorityLabel.bottomAnchor, constant: 20),
             prioritySegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             prioritySegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            prioritySegmentedControl.heightAnchor.constraint(equalToConstant: 35)
-        ])
-        
-        NSLayoutConstraint.activate([
-            descriptionLabel.topAnchor.constraint(equalTo: prioritySegmentedControl.bottomAnchor, constant: 35),
-            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
-        ])
-        
-        NSLayoutConstraint.activate([
+            prioritySegmentedControl.heightAnchor.constraint(equalToConstant: 35),
+            
+            createTaskButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             createTaskButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             createTaskButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            createTaskButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5),
-            createTaskButton.heightAnchor.constraint(equalToConstant: 50)
-        ])
-        
-        NSLayoutConstraint.activate([
-            descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            descriptionTextView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20),
-            descriptionTextView.bottomAnchor.constraint(equalTo: createTaskButton.topAnchor, constant: -35)
+            createTaskButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
 }
