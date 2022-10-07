@@ -55,12 +55,6 @@ class MainViewController: UIViewController {
         storage = TaskStorage()
         
         loadTasks()
-        // Drag & Drop
-//        let longPressGesture = UILongPressGestureRecognizer(
-//            target: self,
-//            action: #selector(handleLongPressGesture)
-//        )
-//        collectionView.addGestureRecognizer(longPressGesture)
     }
     
     private func loadTasks() {
@@ -84,31 +78,7 @@ class MainViewController: UIViewController {
     }
     
     
-    // MARK: ----------------------------
-    
-    // Drag & Drop
-//    @objc private func handleLongPressGesture(_ gesture: UILongPressGestureRecognizer) {
-//
-//        let gestureLocation = gesture.location(in: collectionView)
-//
-//        switch gesture.state {
-//        case .began:
-//
-//            AudioServicesPlaySystemSound(SystemSoundID(1004))
-//
-//            guard let targetIndexPath = collectionView.indexPathForItem(at: gestureLocation) else {
-//                return
-//            }
-//            collectionView.beginInteractiveMovementForItem(at: targetIndexPath)
-//        case .changed:
-//            collectionView.updateInteractiveMovementTargetPosition(gestureLocation)
-//        case .ended:
-//            AudioServicesPlaySystemSound(SystemSoundID(1003))
-//            collectionView.endInteractiveMovement()
-//        default:
-//            collectionView.cancelInteractiveMovement()
-//        }
-//    }
+    // MARK: setupViews
     
     private func setupViews() {
         self.view.backgroundColor = #colorLiteral(red: 0.6648817658, green: 0.7693511844, blue: 0.7778732181, alpha: 1)
@@ -162,7 +132,7 @@ extension MainViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TaskCell", for: indexPath) as? TasksCollectionViewCell,
               let task = tasksDictionary[indexPath.section]?[indexPath.item] else { return UICollectionViewCell()}
         
-#warning("attributedText")
+        #warning("attributedText")
         let attributedForCompleted = NSAttributedString(string: task.title,
                                                         attributes: [.strikethroughStyle: NSUnderlineStyle.single.rawValue])
         let attributedForNotCompleted = NSAttributedString(string: task.title,
@@ -251,9 +221,6 @@ extension MainViewController: UICollectionViewDelegate {
                 UIAction(title: "Edit", image: UIImage(systemName: "highlighter")) { [weak self] _ in
                     self?.setupEditButton(sectionIndex!, taskIndex!)
                 },
-                UIAction(title: "Drag and Drop", image: UIImage(systemName: "arrow.triangle.branch"), handler: { [weak self] _ in
-                    self?.setupDragAndDropButton(sectionIndex!, taskIndex!)
-                }),
                 UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { [weak self] _ in
                     self?.setupDeleteButton(sectionIndex!, taskIndex!)
                 }
@@ -285,12 +252,6 @@ extension MainViewController: UICollectionViewDelegate {
         self.navigationController?.pushViewController(createTaskVC, animated: true)
     }
     
-    func setupDragAndDropButton(_ sectionIndex: Int, _ taskIndex: Int) {
-        #warning("Реалізувати перетягування комірки на інше довільне місце")
-        guard let task = tasksDictionary[sectionIndex]?[taskIndex] else { return }
-        print("Drag and Drop task with title \(task.title)")
-    }
-    
     func setupDeleteButton(_ sectionIndex: Int, _ taskIndex: Int) {
         let alertController = UIAlertController(title: "Confirm the deletion",
                                                 message: "If you press the \"Delete\" button, this action cannot be undone.",
@@ -306,15 +267,6 @@ extension MainViewController: UICollectionViewDelegate {
         
         present(alertController, animated: true)
     }
-    
-    // Long pressure (drag & drop)
-//    func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-//
-//        let priorityKey = prioritySegmentedControl.selectedSegmentIndex
-//
-//        let task = tasksDictionary[priorityKey]!.remove(at: sourceIndexPath.item)
-//        tasksDictionary[priorityKey]!.insert(task, at: destinationIndexPath.item)
-//    }
 }
 
 
