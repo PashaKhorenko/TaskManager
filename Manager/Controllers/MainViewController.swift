@@ -269,13 +269,8 @@ extension MainViewController: UICollectionViewDelegate {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension MainViewController: UICollectionViewDelegateFlowLayout {
-    // размер ячейки
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-//        let paddingWidth = 20 * (itemsPerRow + 1)
-//        let aveilebleWidth = collectionView.frame.width - paddingWidth
-//        let widthPerItem = aveilebleWidth / itemsPerRow
-        
         CGSize(width: collectionView.bounds.width - 20,
                height: collectionView.bounds.width / 2)
     }
