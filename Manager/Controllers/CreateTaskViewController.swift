@@ -13,7 +13,7 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         let label = UILabel()
         label.text = "Task Title"
         label.font = UIFont(name: "HelveticaNeue", size: 20)
-        label.tintColor = .black
+        label.textColor = #colorLiteral(red: 0.0431372549, green: 0.08235294118, blue: 0.0862745098, alpha: 1)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -21,7 +21,7 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         let label = UILabel()
         label.text = "Deadline"
         label.font = UIFont(name: "HelveticaNeue", size: 20)
-        label.tintColor = .black
+        label.textColor = #colorLiteral(red: 0.0431372549, green: 0.08235294118, blue: 0.0862745098, alpha: 1)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -29,7 +29,7 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         let label = UILabel()
         label.text = "Priority"
         label.font = UIFont(name: "HelveticaNeue", size: 20)
-        label.tintColor = .black
+        label.textColor = #colorLiteral(red: 0.0431372549, green: 0.08235294118, blue: 0.0862745098, alpha: 1)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -37,7 +37,7 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         let label = UILabel()
         label.text = "Description"
         label.font = UIFont(name: "HelveticaNeue", size: 20)
-        label.tintColor = .black
+        label.textColor = #colorLiteral(red: 0.0431372549, green: 0.08235294118, blue: 0.0862745098, alpha: 1)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -45,8 +45,8 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         let button = UIButton(type: .system)
         button.tag = 1
         button.setTitle("Create Task", for: .normal)
-        button.backgroundColor = .systemBlue
-        button.tintColor = .white
+        button.backgroundColor = #colorLiteral(red: 0.0431372549, green: 0.08235294118, blue: 0.0862745098, alpha: 1)
+        button.tintColor = #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1)
         button.layer.cornerRadius = 10
         button.titleLabel?.font = UIFont(name: "HelveticaNeue-Bold", size: 23)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -85,10 +85,11 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
     // MARK: - Setup Views
     
     private func setupViews() {
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = #colorLiteral(red: 0.6648817658, green: 0.7693511844, blue: 0.7778732181, alpha: 1)
         self.navigationItem.largeTitleDisplayMode = .never
         self.navigationItem.title = "Create Task"
-        
+        self.navigationController?.navigationBar.tintColor = #colorLiteral(red: 0.01568627451, green: 0.3215686275, blue: 0.337254902, alpha: 1)
+                
         descriptionTextView.delegate = self
         
         view.addSubview(titleLabel)

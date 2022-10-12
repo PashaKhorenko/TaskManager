@@ -6,8 +6,6 @@
 //
 
 import UIKit
-import AVFoundation
-import AudioToolbox
 
 class MainViewController: UIViewController {
     
@@ -132,7 +130,6 @@ extension MainViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TaskCell", for: indexPath) as? TasksCollectionViewCell,
               let task = tasksDictionary[indexPath.section]?[indexPath.item] else { return UICollectionViewCell()}
         
-        #warning("attributedText")
         let attributedForCompleted = NSAttributedString(string: task.title,
                                                         attributes: [.strikethroughStyle: NSUnderlineStyle.single.rawValue])
         let attributedForNotCompleted = NSAttributedString(string: task.title,
@@ -140,7 +137,6 @@ extension MainViewController: UICollectionViewDataSource {
                                                                             NSUnderlineStyle.patternDot.rawValue])
         
         cell.titleLabel.attributedText = task.isCompleted ? attributedForCompleted : attributedForNotCompleted
-//        cell.titleLabel.text = task.title
         cell.descriptionLabel.text = task.description
         cell.timeIntervalLabel.text = task.deadLineDate
 

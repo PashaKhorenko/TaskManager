@@ -19,7 +19,7 @@ class TasksCollectionViewCell: UICollectionViewCell {
     var descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "HelveticaNeue", size: 17)
-        label.numberOfLines = 4
+        label.numberOfLines = 5
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

@@ -5,7 +5,6 @@
 //  Created by Pasha Khorenko on 07.05.2022.
 //
 
-import Foundation
 import UIKit
 
 class PrioritySegmentedControl: UISegmentedControl {

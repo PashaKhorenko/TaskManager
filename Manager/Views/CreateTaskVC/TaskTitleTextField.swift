@@ -5,7 +5,6 @@
 //  Created by Pasha Khorenko on 07.05.2022.
 //
 
-import Foundation
 import UIKit
 
 class TaskTitleTextField: UITextField {
@@ -21,22 +20,20 @@ class TaskTitleTextField: UITextField {
     }
     
     private func configure() {
-        tag = 4
         placeholder = "Enter short title"
-        font = UIFont(name: "HelveticaNeue", size: 17)
-        layer.cornerRadius = 5
-        layer.borderWidth = 2
-        layer.borderColor = UIColor.systemGray.cgColor
-        backgroundColor = #colorLiteral(red: 0.9435634613, green: 0.9468396306, blue: 0.949968636, alpha: 1)
+        font = UIFont(name: "HelveticaNeue", size: 18)
+        layer.masksToBounds = true
+        layer.cornerRadius = 10
+        textColor = #colorLiteral(red: 0.0431372549, green: 0.08235294118, blue: 0.0862745098, alpha: 1)
+        backgroundColor = #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1)
         clearButtonMode = .whileEditing
-        borderStyle = .roundedRect
         returnKeyType = .done
+        borderStyle = .roundedRect
         translatesAutoresizingMaskIntoConstraints = false
     }
 }
 
 extension TaskTitleTextField: UITextFieldDelegate {
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.resignFirstResponder()
     }

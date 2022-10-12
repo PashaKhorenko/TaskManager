@@ -5,7 +5,6 @@
 //  Created by Pasha Khorenko on 07.05.2022.
 //
 
-import Foundation
 import UIKit
  
 class DescriptionTextView: UITextView, UITextViewDelegate {
@@ -21,12 +20,11 @@ class DescriptionTextView: UITextView, UITextViewDelegate {
     }
     
     private func configure() {
-        tag = 3
-        layer.cornerRadius = 5
-        layer.borderWidth = 2
-        layer.borderColor = UIColor.systemGray.cgColor
-        backgroundColor = #colorLiteral(red: 0.9435634613, green: 0.9468396306, blue: 0.949968636, alpha: 1)
-        font = UIFont.systemFont(ofSize: 17)
+        layer.masksToBounds = true
+        layer.cornerRadius = 10
+        backgroundColor = #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1)
+        textColor = #colorLiteral(red: 0.0431372549, green: 0.08235294118, blue: 0.0862745098, alpha: 1)
+        font = UIFont.systemFont(ofSize: 18)
         translatesAutoresizingMaskIntoConstraints = false
     }
 }
