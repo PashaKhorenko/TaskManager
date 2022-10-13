@@ -179,7 +179,6 @@ extension CreateTaskViewController {
 // MARK: - Constreints Setup
 
 extension CreateTaskViewController {
-    
     private func setConstreints() {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
