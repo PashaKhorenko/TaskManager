@@ -141,7 +141,6 @@ extension MainViewController: UICollectionViewDataSource {
         
         cell.titleLabel.attributedText = task.isCompleted ? attributedForCompleted : attributedForNotCompleted
         cell.descriptionLabel.text = task.description
-//        cell.timeIntervalLabel.text = task.deadLineDate
         cell.timeIntervalLabel.text = formatter.string(from: task.deadLineDate)
 
         cell.titleLabel.textColor = task.isCompleted ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
@@ -237,11 +236,7 @@ extension MainViewController: UICollectionViewDelegate {
         guard let task = tasksDictionary[sectionIndex]?[taskIndex] else { return }
         let createTaskVC = CreateTaskViewController()
         
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "dd.MM.yyyy, HH:mm"
-        
         createTaskVC.taskTitleTextField.text = task.title
-//        createTaskVC.deadlineDatePicker.date = formatter.date(from: task.deadLineDate) ?? .now
         createTaskVC.deadlineDatePicker.date = task.deadLineDate
         createTaskVC.prioritySegmentedControl.selectedSegmentIndex = sectionIndex
         createTaskVC.descriptionTextView.text = task.description
