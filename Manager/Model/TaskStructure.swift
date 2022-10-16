@@ -9,7 +9,7 @@ import Foundation
 
 protocol TaskProtocol {
     var title: String { get set }
-    var deadLineDate: String { get set }
+    var deadLineDate: Date { get set }
     var priority: Int { get set }
     var description: String? { get set }
     var isCompleted: Bool { get set }
@@ -18,7 +18,7 @@ protocol TaskProtocol {
 struct Task: TaskProtocol, Codable {
     var isCompleted: Bool
     var title: String
-    var deadLineDate: String
+    var deadLineDate: Date
     var priority: Int
     var description: String?
 }

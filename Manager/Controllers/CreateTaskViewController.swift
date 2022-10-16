@@ -118,19 +118,19 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
             return
         }
         
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd.MM.yyyy, HH:mm"
-        
-        let deadlineDateString = formatter.string(from: deadlineDatePicker.date)
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "dd.MM.yyyy, HH:mm"
+//        
+//        let deadlineDateString = formatter.string(from: deadlineDatePicker.date)
         let prioritiKey = prioritySegmentedControl.selectedSegmentIndex
         let descriptionText = descriptionTextView.text.trimmingCharacters(in: .whitespaces)
         
         let newTask = Task(isCompleted: isCompleted,
                            title: titleText,
-                           deadLineDate: deadlineDateString,
+                           deadLineDate: deadlineDatePicker.date,
                            priority: prioritiKey,
                            description: descriptionText)
-        
+                
         if createTaskButton.tag == 1 {
             mainVC.tasksDictionary[prioritiKey]?.insert(newTask, at: 0)
         } else {
