@@ -136,12 +136,12 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         } else {
             let deadLineDate = mainVC.tasksDictionary[priorityKeyForEditing!]?[indexPathForEditing!].deadLineDate
             let id = "\(deadLineDate!)"
-            self.appDelegate.notificationCenter.removePendingNotificationRequests(withIdentifiers: [id])
             
+            self.appDelegate.notificationCenter.removePendingNotificationRequests(withIdentifiers: [id])
             mainVC.tasksDictionary[priorityKeyForEditing!]?.remove(at: indexPathForEditing!)
             
-            mainVC.tasksDictionary[prioritiKey]?.insert(newTask, at: 0)
             self.appDelegate.sendNotification(for: newTask)
+            mainVC.tasksDictionary[prioritiKey]?.insert(newTask, at: 0)
         }
         
         navigationController?.popViewController(animated: true)

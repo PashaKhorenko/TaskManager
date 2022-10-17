@@ -9,7 +9,7 @@ import UIKit
 
 class MainViewController: UIViewController {
     
-    let appdelegate = AppDelegate()
+    let appDelegate = AppDelegate()
     
     private let tasksCollectionView: UICollectionView = {
         let flowLayout: UICollectionViewFlowLayout = {
@@ -231,6 +231,16 @@ extension MainViewController: UICollectionViewDelegate {
     
     func setupCompletedButton(_ sectionIndex: Int, _ taskIndex: Int) {
         guard let isCompletedOldValue = tasksDictionary[sectionIndex]?[taskIndex].isCompleted else { return }
+        
+        if isCompletedOldValue == false {
+            let deadLineDate = self.tasksDictionary[sectionIndex]?[taskIndex].deadLineDate
+            let id = "\(deadLineDate!)"
+            
+            self.appDelegate.notificationCenter.removePendingNotificationRequests(withIdentifiers: [id])
+        } else {
+            self.appDelegate.sendNotification(for: tasksDictionary[sectionIndex]![taskIndex])
+        }
+        
         tasksDictionary[sectionIndex]?[taskIndex].isCompleted = !isCompletedOldValue
     }
     
@@ -259,8 +269,8 @@ extension MainViewController: UICollectionViewDelegate {
             let deadLineDate = self?.tasksDictionary[sectionIndex]?[taskIndex].deadLineDate
             let id = "\(deadLineDate!)"
             
+            self?.appDelegate.notificationCenter.removePendingNotificationRequests(withIdentifiers: [id])
             self?.tasksDictionary[sectionIndex]?.remove(at: taskIndex)
-            self?.appdelegate.notificationCenter.removePendingNotificationRequests(withIdentifiers: [id])
         }
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
         

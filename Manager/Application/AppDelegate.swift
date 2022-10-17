@@ -31,10 +31,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func sendNotification(for task: Task) {
         let context = UNMutableNotificationContent()
         context.title = task.title
-        context.body = "There are 10 minutes left for the task."
+        context.body = "There are 5 minutes left for the task."
         context.sound = UNNotificationSound.default
         
-        let date = task.deadLineDate.addingTimeInterval(TimeInterval(-10.0 * 60.0))
+        let date = task.deadLineDate.addingTimeInterval(TimeInterval(-5.0 * 60.0))
         let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute],
                                                              from: date)
         
