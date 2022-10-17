@@ -9,6 +9,8 @@ import UIKit
 
 class CreateTaskViewController: UIViewController, UITextViewDelegate {
     
+    let appDelegate = AppDelegate()
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Task Title"
@@ -127,12 +129,19 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
                            deadLineDate: deadlineDate,
                            priority: prioritiKey,
                            description: descriptionText)
-                
+        
         if createTaskButton.tag == 1 {
             mainVC.tasksDictionary[prioritiKey]?.insert(newTask, at: 0)
+            self.appDelegate.sendNotification(for: newTask)
         } else {
+            let deadLineDate = mainVC.tasksDictionary[priorityKeyForEditing!]?[indexPathForEditing!].deadLineDate
+            let id = "\(deadLineDate!)"
+            self.appDelegate.notificationCenter.removePendingNotificationRequests(withIdentifiers: [id])
+            
             mainVC.tasksDictionary[priorityKeyForEditing!]?.remove(at: indexPathForEditing!)
+            
             mainVC.tasksDictionary[prioritiKey]?.insert(newTask, at: 0)
+            self.appDelegate.sendNotification(for: newTask)
         }
         
         navigationController?.popViewController(animated: true)

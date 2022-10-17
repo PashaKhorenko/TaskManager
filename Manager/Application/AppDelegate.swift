@@ -17,28 +17,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
             guard granted else { return }
-            
+
             self.notificationCenter.getNotificationSettings { (settings) in
                 guard settings.authorizationStatus == .authorized else { return }
             }
         }
-        
+
         notificationCenter.delegate = self
-        
-        sendNotification()
-        
+
         return true
     }
     
-    func sendNotification() {
+    func sendNotification(for task: Task) {
         let context = UNMutableNotificationContent()
-        context.title = "Test notification Title"
-        context.body = "Test notification BODY"
+        context.title = task.title
+        context.body = "There are 10 minutes left for the task."
         context.sound = UNNotificationSound.default
         
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let date = task.deadLineDate.addingTimeInterval(TimeInterval(-10.0 * 60.0))
+        let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute],
+                                                             from: date)
         
-        let request = UNNotificationRequest(identifier: "notification",
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents,
+                                                    repeats: false)
+        let id = "\(task.deadLineDate)"
+        let request = UNNotificationRequest(identifier: id,
                                             content: context,
                                             trigger: trigger)
         
@@ -63,15 +66,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
-    
+
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         print(#function)
         completionHandler([.banner, .list, .sound])
     }
-    
+
     // дія по натисканню на сповіщення
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         print(#function)
     }
-    
+
 }

@@ -9,6 +9,8 @@ import UIKit
 
 class MainViewController: UIViewController {
     
+    let appdelegate = AppDelegate()
+    
     private let tasksCollectionView: UICollectionView = {
         let flowLayout: UICollectionViewFlowLayout = {
             let layout = UICollectionViewFlowLayout()
@@ -254,7 +256,11 @@ extension MainViewController: UICollectionViewDelegate {
                                                 preferredStyle: .alert)
         
         let deleteButton = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            let deadLineDate = self?.tasksDictionary[sectionIndex]?[taskIndex].deadLineDate
+            let id = "\(deadLineDate!)"
+            
             self?.tasksDictionary[sectionIndex]?.remove(at: taskIndex)
+            self?.appdelegate.notificationCenter.removePendingNotificationRequests(withIdentifiers: [id])
         }
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
         
