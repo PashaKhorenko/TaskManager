@@ -5,7 +5,6 @@
 //  Created by Pasha Khorenko on 06.05.2022.
 //
 
-import Foundation
 import UIKit
 
 class TasksCollectionViewCell: UICollectionViewCell {
@@ -18,6 +17,7 @@ class TasksCollectionViewCell: UICollectionViewCell {
     }()
     var descriptionLabel: UILabel = {
         let label = UILabel()
+        label.text = "descriptionLabel TEXT"
         label.font = UIFont(name: "HelveticaNeue", size: 17)
         label.numberOfLines = 5
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -25,6 +25,7 @@ class TasksCollectionViewCell: UICollectionViewCell {
     }()
     var timeIntervalLabel: UILabel = {
         let label = UILabel()
+        label.text = "timeIntervalLabel TEXT"
         label.font = UIFont(name: "HelveticaNeue", size: 16)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -81,12 +82,12 @@ extension TasksCollectionViewCell {
             firstDemarcationLine.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
             firstDemarcationLine.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
             firstDemarcationLine.heightAnchor.constraint(equalToConstant: 2),
-            
+
             secondDemarcationLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
             secondDemarcationLine.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
             secondDemarcationLine.bottomAnchor.constraint(equalTo: timeIntervalLabel.topAnchor, constant: -5),
             secondDemarcationLine.heightAnchor.constraint(equalToConstant: 2),
-            
+
             timeIntervalLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
             timeIntervalLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
             timeIntervalLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -7)

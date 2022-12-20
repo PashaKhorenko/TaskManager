@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+/*
 protocol TaskStorageProtocol {
     // Загрузка списка задач
     func load(_ key: String) -> [Task]
@@ -34,3 +34,4 @@ class TaskStorage: TaskStorageProtocol {
         return encodedData.map { try! JSONDecoder().decode(Task.self, from: $0) }
     }
 }
+*/

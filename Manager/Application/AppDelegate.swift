@@ -6,16 +6,17 @@
 //
 
 import UIKit
-import UserNotifications
+//import UserNotifications
+import CoreData
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    let notificationCenter = UNUserNotificationCenter.current()
+//    let notificationCenter = UNUserNotificationCenter.current()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
+ /*       notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
             guard granted else { return }
 
             self.notificationCenter.getNotificationSettings { (settings) in
@@ -24,29 +25,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         notificationCenter.delegate = self
-
+*/
         return true
     }
     
-    func sendNotification(for task: Task) {
-        let context = UNMutableNotificationContent()
-        context.title = task.title
-        context.body = "There are 5 minutes left for the task."
-        context.sound = UNNotificationSound.default
-        
-        let date = task.deadLineDate.addingTimeInterval(TimeInterval(-5.0 * 60.0))
-        let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute],
-                                                             from: date)
-        
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents,
-                                                    repeats: false)
-        let id = "\(task.deadLineDate)"
-        let request = UNNotificationRequest(identifier: id,
-                                            content: context,
-                                            trigger: trigger)
-        
-        notificationCenter.add(request)
-    }
+//    func sendNotification(for task: Task) {
+//        let context = UNMutableNotificationContent()
+//        context.title = task.title
+//        context.body = "There are 5 minutes left for the task."
+//        context.sound = UNNotificationSound.default
+//
+//        let date = task.deadLineDate.addingTimeInterval(TimeInterval(-5.0 * 60.0))
+//        let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute],
+//                                                             from: date)
+//
+//        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents,
+//                                                    repeats: false)
+//        let id = "\(task.deadLineDate)"
+//        let request = UNNotificationRequest(identifier: id,
+//                                            content: context,
+//                                            trigger: trigger)
+//
+//        notificationCenter.add(request)
+//    }
 
     // MARK: UISceneSession Lifecycle
 
@@ -61,20 +62,52 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        self.saveContext()
+    }
+    
+    // MARK: - Core Data stack
+
+    lazy var persistentContainer: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "Manager")
+        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+            if let error = error as NSError? {
+                fatalError("Unresolved error \(error), \(error.userInfo)")
+            }
+        })
+        return container
+    }()
+
+    
+    // MARK: - Core Data Saving support
+
+    func saveContext() {
+        let context = persistentContainer.viewContext
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch {
+                let nserror = error as NSError
+                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+        }
+    }
 
 
 }
 
-extension AppDelegate: UNUserNotificationCenterDelegate {
-
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        print(#function)
-        completionHandler([.banner, .list, .sound])
-    }
-
-    // дія по натисканню на сповіщення
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        print(#function)
-    }
-
-}
+//extension AppDelegate: UNUserNotificationCenterDelegate {
+//
+//    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+//        print(#function)
+//        completionHandler([.banner, .list, .sound])
+//    }
+//
+//    // дія по натисканню на сповіщення
+//    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+//        print("CLICK !!! ", #function)
+//        print(response)
+//    }
+//
+//}

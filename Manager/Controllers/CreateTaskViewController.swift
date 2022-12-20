@@ -6,10 +6,11 @@
 //
 
 import UIKit
+import CoreData
 
 class CreateTaskViewController: UIViewController, UITextViewDelegate {
     
-    let appDelegate = AppDelegate()
+//    let appDelegate = AppDelegate()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -64,6 +65,12 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
     var indexPathForEditing: Int? = nil
     var isCompleted: Bool = false
     
+    private func getContext() -> NSManagedObjectContext {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        
+        return context
+    }
     
     // MARK: - Life Circle
     
@@ -110,6 +117,43 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
     // MARK: - createTaskButton Action
 
     @objc func createTaskButtonTapped() {
+        newImplementation()
+    }
+    
+    func newImplementation() {
+        self.view.endEditing(true)
+        
+        guard let titleText = taskTitleTextField.text?.trimmingCharacters(in: .whitespaces),
+              !titleText.isEmpty else {
+            showAlert()
+            return
+        }
+        
+        self.saveTask(withTitle: titleText)
+        
+        navigationController?.popViewController(animated: true)
+    }
+    
+    private func saveTask(withTitle title: String) {
+        let context = getContext()
+        
+        guard let entity = NSEntityDescription.entity(forEntityName: "Task", in: context) else { return }
+        
+        let taskObject = Task(entity: entity, insertInto: context)
+        taskObject.title = title
+        taskObject.isCompleted = false
+        
+        do {
+            try context.save()
+//            tasksArray.insert(taskObject, at: 0)
+//            tableView.reloadData()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func oldImplementation() {
+        /*
         self.view.endEditing(true)
         
         guard let mainVC = navigationController?.viewControllers.first as? MainViewController else {
@@ -136,7 +180,7 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         } else {
             let deadLineDate = mainVC.tasksDictionary[priorityKeyForEditing!]?[indexPathForEditing!].deadLineDate
             let id = "\(deadLineDate!)"
-            
+
             self.appDelegate.notificationCenter.removePendingNotificationRequests(withIdentifiers: [id])
             mainVC.tasksDictionary[priorityKeyForEditing!]?.remove(at: indexPathForEditing!)
             
@@ -145,17 +189,21 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         }
         
         navigationController?.popViewController(animated: true)
+         */
     }
-    
     
     // MARK: - Alert Setup
     
     private func showAlert() {
         let alertController = UIAlertController(title: "The title field is empty", message: nil, preferredStyle: .alert)
         
-        let doneAction = UIAlertAction(title: "Done", style: .default) { action in
-            let titleText = alertController.textFields![0].text
-            self.taskTitleTextField.text = titleText
+        let doneAction = UIAlertAction(title: "Done", style: .default) { _ in
+            guard let text = alertController.textFields?[0].text else { return }
+            
+            if !text.isEmpty {
+                self.taskTitleTextField.text = text
+            }
+            
         }
         
         alertController.addTextField { uiTextField in
