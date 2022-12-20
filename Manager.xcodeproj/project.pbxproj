@@ -8,9 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		211EE5B028255A2E00623523 /* TasksCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211EE5AF28255A2E00623523 /* TasksCollectionViewCell.swift */; };
-		21609963282A9D370086DEC1 /* TaskStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21609962282A9D370086DEC1 /* TaskStorage.swift */; };
 		216E2488282672100040CA1D /* CreateTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216E2487282672100040CA1D /* CreateTaskViewController.swift */; };
-		21706B582829444D00425169 /* TaskStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21706B572829444D00425169 /* TaskStructure.swift */; };
 		2195E8A22827E0DA00E70875 /* DemarcationLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2195E8A12827E0DA00E70875 /* DemarcationLine.swift */; };
 		21AEE2CB2826BC1B00169939 /* TaskTitleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21AEE2CA2826BC1B00169939 /* TaskTitleTextField.swift */; };
 		21AEE2D92826C67100169939 /* PrioritySegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21AEE2D82826C67100169939 /* PrioritySegmentedControl.swift */; };
@@ -27,9 +25,7 @@
 
 /* Begin PBXFileReference section */
 		211EE5AF28255A2E00623523 /* TasksCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksCollectionViewCell.swift; sourceTree = "<group>"; };
-		21609962282A9D370086DEC1 /* TaskStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskStorage.swift; sourceTree = "<group>"; };
 		216E2487282672100040CA1D /* CreateTaskViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTaskViewController.swift; sourceTree = "<group>"; };
-		21706B572829444D00425169 /* TaskStructure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskStructure.swift; sourceTree = "<group>"; };
 		2195E8A12827E0DA00E70875 /* DemarcationLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemarcationLine.swift; sourceTree = "<group>"; };
 		21AEE2CA2826BC1B00169939 /* TaskTitleTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTitleTextField.swift; sourceTree = "<group>"; };
 		21AEE2D82826C67100169939 /* PrioritySegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrioritySegmentedControl.swift; sourceTree = "<group>"; };
@@ -77,19 +73,11 @@
 		213040E8282503B800632C53 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				21AEE2D82826C67100169939 /* PrioritySegmentedControl.swift */,
 				211EE5AE28255A0000623523 /* Cells */,
 				216E2489282676460040CA1D /* CreateTaskVC */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		213040E9282503CD00632C53 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				21706B572829444D00425169 /* TaskStructure.swift */,
-				21609962282A9D370086DEC1 /* TaskStorage.swift */,
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		213040EA282503DA00632C53 /* Application */ = {
@@ -116,7 +104,6 @@
 			children = (
 				21AEE2CA2826BC1B00169939 /* TaskTitleTextField.swift */,
 				4655373428EEE18A00A5EF1C /* CustomDatePicker.swift */,
-				21AEE2D82826C67100169939 /* PrioritySegmentedControl.swift */,
 				21AEE2DE2826CC8E00169939 /* DescriptionTextView.swift */,
 			);
 			path = CreateTaskVC;
@@ -153,12 +140,27 @@
 			children = (
 				213040EB2825041A00632C53 /* Resources */,
 				213040EA282503DA00632C53 /* Application */,
-				213040E9282503CD00632C53 /* Model */,
+				4652735E2951C8AC00B8D2EE /* Model */,
 				213040E8282503B800632C53 /* Views */,
 				213040E7282503A900632C53 /* Controllers */,
-				462FECF52951A64C002EC4D9 /* Manager.xcdatamodeld */,
 			);
 			path = Manager;
+			sourceTree = "<group>";
+		};
+		4652735E2951C8AC00B8D2EE /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				4652735F2951C8B600B8D2EE /* Storage */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		4652735F2951C8B600B8D2EE /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				462FECF52951A64C002EC4D9 /* Manager.xcdatamodeld */,
+			);
+			path = Storage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -234,14 +236,12 @@
 				4655373528EEE18A00A5EF1C /* CustomDatePicker.swift in Sources */,
 				462FECF72951A64C002EC4D9 /* Manager.xcdatamodeld in Sources */,
 				21F2D91827E745840057C498 /* MainViewController.swift in Sources */,
-				21706B582829444D00425169 /* TaskStructure.swift in Sources */,
 				211EE5B028255A2E00623523 /* TasksCollectionViewCell.swift in Sources */,
 				2195E8A22827E0DA00E70875 /* DemarcationLine.swift in Sources */,
 				21F2D91427E745840057C498 /* AppDelegate.swift in Sources */,
 				21F2D91627E745840057C498 /* SceneDelegate.swift in Sources */,
 				21AEE2CB2826BC1B00169939 /* TaskTitleTextField.swift in Sources */,
 				21AEE2DF2826CC8E00169939 /* DescriptionTextView.swift in Sources */,
-				21609963282A9D370086DEC1 /* TaskStorage.swift in Sources */,
 				216E2488282672100040CA1D /* CreateTaskViewController.swift in Sources */,
 				46BFB69128E8446E0074332C /* HeaderForSection.swift in Sources */,
 				21AEE2D92826C67100169939 /* PrioritySegmentedControl.swift in Sources */,

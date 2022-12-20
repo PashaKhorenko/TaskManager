@@ -129,24 +129,30 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
             return
         }
         
-        self.saveTask(withTitle: titleText)
+        let description = descriptionTextView.text!
+        let deadlineDate = deadlineDatePicker.date
+        let priority = prioritySegmentedControl.selectedSegmentIndex
+
+        self.saveTask(with: titleText, deadlineDate, priority, description, isCompleted)
         
         navigationController?.popViewController(animated: true)
     }
     
-    private func saveTask(withTitle title: String) {
+    private func saveTask(with title: String, _ deadline: Date, _ priority: Int, _ description: String, _ comletion: Bool) {
         let context = getContext()
-        
         guard let entity = NSEntityDescription.entity(forEntityName: "Task", in: context) else { return }
         
         let taskObject = Task(entity: entity, insertInto: context)
+        
+        taskObject.dateOfCreation = .now
         taskObject.title = title
-        taskObject.isCompleted = false
+        taskObject.isCompleted = comletion
+        taskObject.descriptionText = description
+        taskObject.priority = Int16(priority)
+        taskObject.deadlineDate = deadline
         
         do {
             try context.save()
-//            tasksArray.insert(taskObject, at: 0)
-//            tableView.reloadData()
         } catch let error {
             print(error.localizedDescription)
         }
