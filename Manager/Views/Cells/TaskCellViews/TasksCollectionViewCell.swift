@@ -17,7 +17,6 @@ class TasksCollectionViewCell: UICollectionViewCell {
     }()
     var descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "descriptionLabel TEXT"
         label.font = UIFont(name: "HelveticaNeue", size: 17)
         label.numberOfLines = 5
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -25,9 +24,8 @@ class TasksCollectionViewCell: UICollectionViewCell {
     }()
     var timeIntervalLabel: UILabel = {
         let label = UILabel()
-        label.text = "timeIntervalLabel TEXT"
         label.font = UIFont(name: "HelveticaNeue", size: 16)
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

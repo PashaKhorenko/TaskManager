@@ -20,7 +20,6 @@
 		21F2D92027E745850057C498 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21F2D91E27E745850057C498 /* LaunchScreen.storyboard */; };
 		462FECF72951A64C002EC4D9 /* Manager.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 462FECF52951A64C002EC4D9 /* Manager.xcdatamodeld */; };
 		4655373528EEE18A00A5EF1C /* CustomDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4655373428EEE18A00A5EF1C /* CustomDatePicker.swift */; };
-		46BFB69128E8446E0074332C /* HeaderForSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BFB69028E8446E0074332C /* HeaderForSection.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,7 +38,6 @@
 		21F2D92127E745850057C498 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		462FECF62951A64C002EC4D9 /* Manager.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Manager.xcdatamodel; sourceTree = "<group>"; };
 		4655373428EEE18A00A5EF1C /* CustomDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
-		46BFB69028E8446E0074332C /* HeaderForSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderForSection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,7 +110,6 @@
 		2195E8A92827E86000E70875 /* TaskCellViews */ = {
 			isa = PBXGroup;
 			children = (
-				46BFB69028E8446E0074332C /* HeaderForSection.swift */,
 				211EE5AF28255A2E00623523 /* TasksCollectionViewCell.swift */,
 				2195E8A12827E0DA00E70875 /* DemarcationLine.swift */,
 			);
@@ -243,7 +240,6 @@
 				21AEE2CB2826BC1B00169939 /* TaskTitleTextField.swift in Sources */,
 				21AEE2DF2826CC8E00169939 /* DescriptionTextView.swift in Sources */,
 				216E2488282672100040CA1D /* CreateTaskViewController.swift in Sources */,
-				46BFB69128E8446E0074332C /* HeaderForSection.swift in Sources */,
 				21AEE2D92826C67100169939 /* PrioritySegmentedControl.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

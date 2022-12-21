@@ -72,11 +72,18 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         return context
     }
     
+    private func getSortingConditions() -> [NSSortDescriptor] {
+        let sortByDate = NSSortDescriptor(key: "dateOfCreation", ascending: false)
+        let sortByCompletion = NSSortDescriptor(key: "isCompleted", ascending: true)
+        
+        return [sortByCompletion, sortByDate]
+    }
+    
     // MARK: - Life Circle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        
         setupViews()
         setConstreints()
         
@@ -84,7 +91,7 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-            
+        
         if self.createTaskButton.tag != 1 {
             self.createTaskButton.setTitle("Save Task", for: .normal)
         }
@@ -98,7 +105,7 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         self.navigationItem.largeTitleDisplayMode = .never
         self.navigationItem.title = "Create Task"
         self.navigationController?.navigationBar.tintColor = #colorLiteral(red: 0.01568627451, green: 0.3215686275, blue: 0.337254902, alpha: 1)
-                
+        
         descriptionTextView.delegate = self
         
         view.addSubview(titleLabel)
@@ -115,12 +122,8 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
     }
     
     // MARK: - createTaskButton Action
-
-    @objc func createTaskButtonTapped() {
-        newImplementation()
-    }
     
-    func newImplementation() {
+    @objc func createTaskButtonTapped() {
         self.view.endEditing(true)
         
         guard let titleText = taskTitleTextField.text?.trimmingCharacters(in: .whitespaces),
@@ -132,8 +135,27 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         let description = descriptionTextView.text!
         let deadlineDate = deadlineDatePicker.date
         let priority = prioritySegmentedControl.selectedSegmentIndex
-
-        self.saveTask(with: titleText, deadlineDate, priority, description, isCompleted)
+        
+        if createTaskButton.tag == 1 {
+            self.saveTask(with: titleText, deadlineDate, priority, description, isCompleted)
+        } else {
+            let context = self.getContext()
+            let fetchRequest = Task.fetchRequest()
+            
+            fetchRequest.sortDescriptors = getSortingConditions()
+            
+            guard let array = try? context.fetch(fetchRequest) else { return }
+            
+            context.delete(array[indexPathForEditing!])
+            
+            do {
+                try context.save()
+            } catch let error {
+                print(error.localizedDescription)
+            }
+            
+            self.saveTask(with: titleText, deadlineDate, priority, description, isCompleted)
+        }
         
         navigationController?.popViewController(animated: true)
     }
@@ -156,46 +178,6 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         } catch let error {
             print(error.localizedDescription)
         }
-    }
-    
-    func oldImplementation() {
-        /*
-        self.view.endEditing(true)
-        
-        guard let mainVC = navigationController?.viewControllers.first as? MainViewController else {
-            return }
-        
-        guard let titleText = taskTitleTextField.text?.trimmingCharacters(in: .whitespaces), !titleText.isEmpty else {
-            showAlert()
-            return
-        }
-        
-        let prioritiKey = prioritySegmentedControl.selectedSegmentIndex
-        let descriptionText = descriptionTextView.text.trimmingCharacters(in: .whitespaces)
-        let deadlineDate = deadlineDatePicker.date
-        
-        let newTask = Task(isCompleted: isCompleted,
-                           title: titleText,
-                           deadLineDate: deadlineDate,
-                           priority: prioritiKey,
-                           description: descriptionText)
-        
-        if createTaskButton.tag == 1 {
-            mainVC.tasksDictionary[prioritiKey]?.insert(newTask, at: 0)
-            self.appDelegate.sendNotification(for: newTask)
-        } else {
-            let deadLineDate = mainVC.tasksDictionary[priorityKeyForEditing!]?[indexPathForEditing!].deadLineDate
-            let id = "\(deadLineDate!)"
-
-            self.appDelegate.notificationCenter.removePendingNotificationRequests(withIdentifiers: [id])
-            mainVC.tasksDictionary[priorityKeyForEditing!]?.remove(at: indexPathForEditing!)
-            
-            self.appDelegate.sendNotification(for: newTask)
-            mainVC.tasksDictionary[prioritiKey]?.insert(newTask, at: 0)
-        }
-        
-        navigationController?.popViewController(animated: true)
-         */
     }
     
     // MARK: - Alert Setup
