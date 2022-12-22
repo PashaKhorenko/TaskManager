@@ -65,8 +65,14 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
     var indexPathForEditing: Int? = nil
     var isCompleted: Bool = false
     
+    // MARK: - Auxiliary functions
+    
+    private func getAppDelegate() -> AppDelegate {
+        return UIApplication.shared.delegate as! AppDelegate
+    }
+    
     private func getContext() -> NSManagedObjectContext {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let appDelegate = getAppDelegate()
         let context = appDelegate.persistentContainer.viewContext
         
         return context

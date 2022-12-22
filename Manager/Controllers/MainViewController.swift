@@ -10,7 +10,7 @@ import CoreData
 
 class MainViewController: UIViewController {
     
-//    let appDelegate = AppDelegate()
+    let notifications = Notifications()
     
     private let prioritySegmentedControl = PrioritySegmentedControl(frame: .zero)
     
@@ -48,8 +48,12 @@ class MainViewController: UIViewController {
     
     // MARK: - Auxiliary functions
     
+    private func getAppDelegate() -> AppDelegate {
+        return UIApplication.shared.delegate as! AppDelegate
+    }
+    
     private func getContext() -> NSManagedObjectContext {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let appDelegate = getAppDelegate()
         
         return appDelegate.persistentContainer.viewContext
     }
@@ -61,7 +65,7 @@ class MainViewController: UIViewController {
         return [sortByCompletion, sortByDate]
     }
     
-    private func getFormatter() -> DateFormatter {
+    private func getDataFormatter() -> DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy, HH:mm"
         
@@ -156,7 +160,7 @@ extension MainViewController: UICollectionViewDataSource {
                 
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TaskCell", for: indexPath) as? TasksCollectionViewCell else { return UICollectionViewCell() }
         
-        let formatter = getFormatter()
+        let formatter = getDataFormatter()
         
         var task: Task {
             switch prioritySegmentedControl.selectedSegmentIndex {
@@ -187,7 +191,8 @@ extension MainViewController: UICollectionViewDelegate {
     
     // Short pressure
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        setupEditButton(indexPath.item)
+//        setupEditButton(indexPath.item)
+        notifications.sentNotification(for: criticalTasksArray[indexPath.item])
     }
     
     // MARK: UIContextMenu
@@ -225,7 +230,7 @@ extension MainViewController: UICollectionViewDelegate {
     }
 
     private func setupCompletedButton(_ taskIndex: Int) {
-        let formatter = getFormatter()
+        let formatter = getDataFormatter()
         
         func editTask(in array: [Task]) {
             if !array[taskIndex].isCompleted {

@@ -18,6 +18,7 @@
 		21F2D91827E745840057C498 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F2D91727E745840057C498 /* MainViewController.swift */; };
 		21F2D91D27E745850057C498 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 21F2D91C27E745850057C498 /* Assets.xcassets */; };
 		21F2D92027E745850057C498 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21F2D91E27E745850057C498 /* LaunchScreen.storyboard */; };
+		4616C53E29546D860014AE2A /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4616C53D29546D860014AE2A /* Notifications.swift */; };
 		462FECF72951A64C002EC4D9 /* Manager.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 462FECF52951A64C002EC4D9 /* Manager.xcdatamodeld */; };
 		4655373528EEE18A00A5EF1C /* CustomDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4655373428EEE18A00A5EF1C /* CustomDatePicker.swift */; };
 /* End PBXBuildFile section */
@@ -36,6 +37,7 @@
 		21F2D91C27E745850057C498 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		21F2D91F27E745850057C498 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		21F2D92127E745850057C498 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4616C53D29546D860014AE2A /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		462FECF62951A64C002EC4D9 /* Manager.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Manager.xcdatamodel; sourceTree = "<group>"; };
 		4655373428EEE18A00A5EF1C /* CustomDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -144,9 +146,18 @@
 			path = Manager;
 			sourceTree = "<group>";
 		};
+		4616C53C29546D630014AE2A /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				4616C53D29546D860014AE2A /* Notifications.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
 		4652735E2951C8AC00B8D2EE /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				4616C53C29546D630014AE2A /* Notifications */,
 				4652735F2951C8B600B8D2EE /* Storage */,
 			);
 			path = Model;
@@ -230,6 +241,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4616C53E29546D860014AE2A /* Notifications.swift in Sources */,
 				4655373528EEE18A00A5EF1C /* CustomDatePicker.swift in Sources */,
 				462FECF72951A64C002EC4D9 /* Manager.xcdatamodeld in Sources */,
 				21F2D91827E745840057C498 /* MainViewController.swift in Sources */,

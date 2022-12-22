@@ -6,48 +6,22 @@
 //
 
 import UIKit
-//import UserNotifications
+import UserNotifications
 import CoreData
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-//    let notificationCenter = UNUserNotificationCenter.current()
+    let notifications = Notifications()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
- /*       notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
-            guard granted else { return }
+        notifications.requestAutorization()
+        
+        notifications.notificationCenter.delegate = notifications
 
-            self.notificationCenter.getNotificationSettings { (settings) in
-                guard settings.authorizationStatus == .authorized else { return }
-            }
-        }
-
-        notificationCenter.delegate = self
-*/
         return true
     }
-    
-//    func sendNotification(for task: Task) {
-//        let context = UNMutableNotificationContent()
-//        context.title = task.title
-//        context.body = "There are 5 minutes left for the task."
-//        context.sound = UNNotificationSound.default
-//
-//        let date = task.deadLineDate.addingTimeInterval(TimeInterval(-5.0 * 60.0))
-//        let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute],
-//                                                             from: date)
-//
-//        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents,
-//                                                    repeats: false)
-//        let id = "\(task.deadLineDate)"
-//        let request = UNNotificationRequest(identifier: id,
-//                                            content: context,
-//                                            trigger: trigger)
-//
-//        notificationCenter.add(request)
-//    }
 
     // MARK: UISceneSession Lifecycle
 
@@ -55,12 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when a new scene session is being created.
         // Use this method to select a configuration to create the new scene with.
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-    }
-
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
@@ -97,17 +65,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
-//extension AppDelegate: UNUserNotificationCenterDelegate {
-//
-//    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-//        print(#function)
-//        completionHandler([.banner, .list, .sound])
-//    }
-//
-//    // дія по натисканню на сповіщення
-//    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-//        print("CLICK !!! ", #function)
-//        print(response)
-//    }
-//
-//}
+
