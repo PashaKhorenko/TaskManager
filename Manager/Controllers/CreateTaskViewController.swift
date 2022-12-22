@@ -10,7 +10,7 @@ import CoreData
 
 class CreateTaskViewController: UIViewController, UITextViewDelegate {
     
-//    let appDelegate = AppDelegate()
+    let notifications = Notifications()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -61,6 +61,7 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
     let deadlineDatePicker = CustomDatePicker()
     let prioritySegmentedControl = PrioritySegmentedControl(frame: .zero)
     
+    var notificationID: String? = nil
     var priorityKeyForEditing: Int? = nil
     var indexPathForEditing: Int? = nil
     var isCompleted: Bool = false
@@ -80,7 +81,7 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
     
     private func getSortingConditions() -> [NSSortDescriptor] {
         let sortByDate = NSSortDescriptor(key: "dateOfCreation", ascending: false)
-        let sortByCompletion = NSSortDescriptor(key: "isCompleted", ascending: true)
+        let sortByCompletion = NSSortDescriptor(key: "completionStatus", ascending: true)
         
         return [sortByCompletion, sortByDate]
     }
@@ -143,7 +144,11 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         let priority = prioritySegmentedControl.selectedSegmentIndex
         
         if createTaskButton.tag == 1 {
-            self.saveTask(with: titleText, deadlineDate, priority, description, isCompleted)
+            self.saveTask(withTitle: titleText,
+                          description: description,
+                          deadline: deadlineDate,
+                          priority: priority,
+                          completion: isCompleted)
         } else {
             let context = self.getContext()
             let fetchRequest = Task.fetchRequest()
@@ -160,30 +165,39 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
                 print(error.localizedDescription)
             }
             
-            self.saveTask(with: titleText, deadlineDate, priority, description, isCompleted)
+            self.notifications.notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationID!])
+            
+            self.saveTask(withTitle: titleText,
+                          description: description,
+                          deadline: deadlineDate,
+                          priority: priority,
+                          completion: isCompleted)
         }
         
         navigationController?.popViewController(animated: true)
     }
     
-    private func saveTask(with title: String, _ deadline: Date, _ priority: Int, _ description: String, _ comletion: Bool) {
+    private func saveTask(withTitle title: String, description: String, deadline: Date, priority: Int, completion: Bool) {
         let context = getContext()
         guard let entity = NSEntityDescription.entity(forEntityName: "Task", in: context) else { return }
         
         let taskObject = Task(entity: entity, insertInto: context)
         
         taskObject.dateOfCreation = .now
+        
         taskObject.title = title
-        taskObject.isCompleted = comletion
         taskObject.descriptionText = description
-        taskObject.priority = Int16(priority)
         taskObject.deadlineDate = deadline
+        taskObject.priority = Int16(priority)
+        taskObject.completionStatus = completion
         
         do {
             try context.save()
         } catch let error {
             print(error.localizedDescription)
         }
+        
+        notifications.sentNotification(for: taskObject)
     }
     
     // MARK: - Alert Setup

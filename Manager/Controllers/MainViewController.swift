@@ -60,7 +60,7 @@ class MainViewController: UIViewController {
     
     private func getSortingConditions() -> [NSSortDescriptor] {
         let sortByDate = NSSortDescriptor(key: "dateOfCreation", ascending: false)
-        let sortByCompletion = NSSortDescriptor(key: "isCompleted", ascending: true)
+        let sortByCompletion = NSSortDescriptor(key: "completionStatus", ascending: true)
         
         return [sortByCompletion, sortByDate]
     }
@@ -175,10 +175,10 @@ extension MainViewController: UICollectionViewDataSource {
         cell.descriptionLabel.text = task.descriptionText
         cell.timeIntervalLabel.text = "Complete by \(formatter.string(from: task.deadlineDate ?? .now))."
    
-        cell.titleLabel.textColor = task.isCompleted ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
-        cell.descriptionLabel.textColor = task.isCompleted ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
-        cell.timeIntervalLabel.textColor = task.isCompleted ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
-        cell.contentView.backgroundColor = task.isCompleted ? #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1) : #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1)
+        cell.titleLabel.textColor = task.completionStatus ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
+        cell.descriptionLabel.textColor = task.completionStatus ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
+        cell.timeIntervalLabel.textColor = task.completionStatus ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
+        cell.contentView.backgroundColor = task.completionStatus ? #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1) : #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1)
        
         return cell
     }
@@ -191,8 +191,7 @@ extension MainViewController: UICollectionViewDelegate {
     
     // Short pressure
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        setupEditButton(indexPath.item)
-        notifications.sentNotification(for: criticalTasksArray[indexPath.item])
+        setupEditButton(indexPath.item)
     }
     
     // MARK: UIContextMenu
@@ -206,10 +205,10 @@ extension MainViewController: UICollectionViewDelegate {
         
         var taskCompletion: Bool {
             switch prioritySegmentedControl.selectedSegmentIndex {
-            case 0: return criticalTasksArray[taskIndex].isCompleted
-            case 1: return highTasksArray[taskIndex].isCompleted
-            case 2: return mediumTasksArray[taskIndex].isCompleted
-            default: return lowTasksArray[taskIndex].isCompleted
+            case 0: return criticalTasksArray[taskIndex].completionStatus
+            case 1: return highTasksArray[taskIndex].completionStatus
+            case 2: return mediumTasksArray[taskIndex].completionStatus
+            default: return lowTasksArray[taskIndex].completionStatus
             }
         }
         let completedButtonTitle = taskCompletion ? "Not Completed" : "Completed"
@@ -233,14 +232,20 @@ extension MainViewController: UICollectionViewDelegate {
         let formatter = getDataFormatter()
         
         func editTask(in array: [Task]) {
-            if !array[taskIndex].isCompleted {
+            if !array[taskIndex].completionStatus {
                 let completedAt = "Marked as completed on \(formatter.string(from: .now))."
                 let description = array[taskIndex].descriptionText
                 
                 array[taskIndex].descriptionText = "\(completedAt) \n\(description!)"
+                
+                let notificationID = "\(array[taskIndex].dateOfCreation!)"
+                
+                self.notifications.notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationID])
+            } else {
+                self.notifications.sentNotification(for: array[taskIndex])
             }
         
-            array[taskIndex].isCompleted.toggle()
+            array[taskIndex].completionStatus.toggle()
         }
         
         switch prioritySegmentedControl.selectedSegmentIndex {
@@ -275,9 +280,12 @@ extension MainViewController: UICollectionViewDelegate {
         createTaskVC.deadlineDatePicker.date = task.deadlineDate!
         createTaskVC.prioritySegmentedControl.selectedSegmentIndex = Int(task.priority)
         createTaskVC.descriptionTextView.text = task.descriptionText
-        createTaskVC.isCompleted = task.isCompleted
+        createTaskVC.isCompleted = task.completionStatus
+        
+        createTaskVC.notificationID = "\(task.dateOfCreation!)"
         createTaskVC.priorityKeyForEditing = Int(task.priority)
         createTaskVC.indexPathForEditing = taskIndex
+        
         createTaskVC.createTaskButton.tag = 2
         
         self.navigationController?.pushViewController(createTaskVC, animated: true)
@@ -300,18 +308,19 @@ extension MainViewController: UICollectionViewDelegate {
             
             do {
                 try context?.save()
-                
-                switch self?.prioritySegmentedControl.selectedSegmentIndex {
-                case 0: self?.criticalTasksArray.remove(at: taskIndex)
-                case 1: self?.highTasksArray.remove(at: taskIndex)
-                case 2: self?.mediumTasksArray.remove(at: taskIndex)
-                default: self?.lowTasksArray.remove(at: taskIndex)
-                }
-                
-                self?.tasksCollectionView.reloadData()
             } catch let error {
                 print(error.localizedDescription)
             }
+            
+            switch self?.prioritySegmentedControl.selectedSegmentIndex {
+            case 0: self?.criticalTasksArray.remove(at: taskIndex)
+            case 1: self?.highTasksArray.remove(at: taskIndex)
+            case 2: self?.mediumTasksArray.remove(at: taskIndex)
+            default: self?.lowTasksArray.remove(at: taskIndex)
+            }
+            
+            self?.tasksCollectionView.reloadData()
+                        
         }
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
         
@@ -340,8 +349,8 @@ extension MainViewController {
     private func setConstreints() {
         NSLayoutConstraint.activate([
             prioritySegmentedControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
-            prioritySegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            prioritySegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            prioritySegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
+            prioritySegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
             
             tasksCollectionView.topAnchor.constraint(equalTo: prioritySegmentedControl.bottomAnchor, constant: 10),
             tasksCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5),

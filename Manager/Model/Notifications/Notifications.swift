@@ -35,23 +35,26 @@ class Notifications: NSObject {
     // MARK: - Send Notification
     
     func sentNotification(for task: Task) {
-        let identifierForRequest = "\(task.deadlineDate!)"
+        let identifierForRequest = "\(task.dateOfCreation!)"
         let identifierForCategory = "categoryID"
         
-        // MARK: -
+        // Step 1: Create the notification content
         let content = UNMutableNotificationContent()
         
         content.title = "Task Manager"
         content.subtitle = task.title!
-        content.body = "This is example how to create Local Notification"
+        content.body = "There are 20 minutes left for the task"
         content.sound = UNNotificationSound.default
         content.badge = 1
         content.categoryIdentifier = identifierForCategory
         
-        // MARK: -
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        // Step 2: Create the notification trigger
+        guard let date = task.deadlineDate?.addingTimeInterval(-20 * 60)  else { return }
+        let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
         
-        // MARK: -
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
+        
+        // Step 3: Create the notification request
         let request = UNNotificationRequest(identifier: identifierForRequest,
                                             content: content,
                                             trigger: trigger)
@@ -60,11 +63,12 @@ class Notifications: NSObject {
             guard let error else { return }
             print("Error with notifications: \(error.localizedDescription)")
         }
-        
-        // MARK: -
+                                
+        // Create actions for notifications category
         let remindAfterFiveActions = UNNotificationAction(identifier: "five", title: "Remind in 5 minutes.")
         let remindAfterTenActions = UNNotificationAction(identifier: "ten", title: "Remind in 10 minutes.")
         
+        // Create notifications category
         let category = UNNotificationCategory(identifier: identifierForCategory,
                                               actions: [remindAfterFiveActions, remindAfterTenActions],
                                               intentIdentifiers: [])
@@ -83,7 +87,7 @@ class Notifications: NSObject {
             }
         }
         
-        // MARK: -
+        // Step 1: Create the notification content
         let content = UNMutableNotificationContent()
         
         var bodyText: String {
@@ -100,7 +104,7 @@ class Notifications: NSObject {
         content.body = bodyText
         content.sound = UNNotificationSound.default
         
-        // MARK: -
+        // Step 2: Create the notification trigger
         var timeForTrigger: TimeInterval {
             switch time {
             case .Five:
@@ -112,7 +116,7 @@ class Notifications: NSObject {
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeForTrigger, repeats: false)
         
-        // MARK: -
+        // Step 3: Create the notification request
         let request = UNNotificationRequest(identifier: identifierForRequest,
                                             content: content,
                                             trigger: trigger)
