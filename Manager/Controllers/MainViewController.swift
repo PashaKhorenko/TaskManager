@@ -159,9 +159,7 @@ extension MainViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
                 
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TaskCell", for: indexPath) as? TasksCollectionViewCell else { return UICollectionViewCell() }
-        
-        let formatter = getDataFormatter()
-        
+                
         var task: Task {
             switch prioritySegmentedControl.selectedSegmentIndex {
             case 0: return criticalTasksArray[indexPath.item]
@@ -170,15 +168,8 @@ extension MainViewController: UICollectionViewDataSource {
             default: return lowTasksArray[indexPath.item]
             }
         }
-                
-        cell.titleLabel.text = task.title
-        cell.descriptionLabel.text = task.descriptionText
-        cell.timeIntervalLabel.text = "Complete by \(formatter.string(from: task.deadlineDate ?? .now))."
-   
-        cell.titleLabel.textColor = task.completionStatus ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
-        cell.descriptionLabel.textColor = task.completionStatus ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
-        cell.timeIntervalLabel.textColor = task.completionStatus ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
-        cell.contentView.backgroundColor = task.completionStatus ? #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1) : #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1)
+
+        cell.configure(for: task)
        
         return cell
     }

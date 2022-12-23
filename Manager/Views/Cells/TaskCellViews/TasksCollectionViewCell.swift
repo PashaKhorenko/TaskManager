@@ -9,28 +9,35 @@ import UIKit
 
 class TasksCollectionViewCell: UICollectionViewCell {
     
-    var titleLabel: UILabel = {
+    private var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "HelveticaNeue-Bold", size: 21)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    var descriptionLabel: UILabel = {
+    private var descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "HelveticaNeue", size: 17)
-        label.numberOfLines = 5
+        label.numberOfLines = 4
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    var timeIntervalLabel: UILabel = {
+    private var dateOfCreationLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "HelveticaNeue", size: 16)
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    let firstDemarcationLine = DemarcationLine()
-    let secondDemarcationLine = DemarcationLine()
+    private var deadlineLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "HelveticaNeue", size: 16)
+        label.textAlignment = .left
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    private let firstDemarcationLine = DemarcationLine()
+    private let secondDemarcationLine = DemarcationLine()
         
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -55,7 +62,34 @@ class TasksCollectionViewCell: UICollectionViewCell {
         addSubview(firstDemarcationLine)
         addSubview(descriptionLabel)
         addSubview(secondDemarcationLine)
-        addSubview(timeIntervalLabel)
+        addSubview(dateOfCreationLabel)
+        addSubview(deadlineLabel)
+    }
+    
+    private func getDataFormatter() -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yyyy, HH:mm"
+        
+        return formatter
+    }
+    
+    private func configuteColors(_ completionStatus: Bool) {
+        titleLabel.textColor = completionStatus ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
+        descriptionLabel.textColor = completionStatus ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
+        dateOfCreationLabel.textColor = completionStatus ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
+        deadlineLabel.textColor = completionStatus ? #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1) : #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1)
+        contentView.backgroundColor = completionStatus ? #colorLiteral(red: 0.031165611, green: 0.08367796987, blue: 0.08724553138, alpha: 1) : #colorLiteral(red: 0.8666666667, green: 0.968627451, blue: 0.9725490196, alpha: 1)
+    }
+    
+    func configure(for task: Task) {
+        let formatter = getDataFormatter()
+        
+        configuteColors(task.completionStatus)
+        
+        titleLabel.text = task.title
+        descriptionLabel.text = task.descriptionText
+        dateOfCreationLabel.text = "Date of creation: \(formatter.string(from: task.dateOfCreation!))"
+        deadlineLabel.text = "Deadline: \(formatter.string(from: task.deadlineDate!))"
     }
 }
 
@@ -83,12 +117,16 @@ extension TasksCollectionViewCell {
 
             secondDemarcationLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
             secondDemarcationLine.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
-            secondDemarcationLine.bottomAnchor.constraint(equalTo: timeIntervalLabel.topAnchor, constant: -5),
+            secondDemarcationLine.bottomAnchor.constraint(equalTo: dateOfCreationLabel.topAnchor, constant: -5),
             secondDemarcationLine.heightAnchor.constraint(equalToConstant: 2),
 
-            timeIntervalLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            timeIntervalLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            timeIntervalLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -7)
+            dateOfCreationLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            dateOfCreationLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+            dateOfCreationLabel.bottomAnchor.constraint(equalTo: deadlineLabel.topAnchor),
+            
+            deadlineLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            deadlineLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+            deadlineLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5)
         ])
     }
 }
