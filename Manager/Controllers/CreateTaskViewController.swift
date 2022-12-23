@@ -61,7 +61,7 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
     let deadlineDatePicker = CustomDatePicker()
     let prioritySegmentedControl = PrioritySegmentedControl(frame: .zero)
     
-    var notificationID: String? = nil
+    var notificationID: Date? = nil
     var priorityKeyForEditing: Int? = nil
     var indexPathForEditing: Int? = nil
     var isCompleted: Bool = false
@@ -125,6 +125,17 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
         view.addSubview(createTaskButton)
         view.addSubview(descriptionTextView)
         
+        // Minimum date limit for deadlineDatePicker
+        if createTaskButton.tag == 1 {
+            deadlineDatePicker.minimumDate = Calendar.current.date(byAdding: .minute,
+                                                                   value: 30,
+                                                                   to: .now)
+        } else {
+            deadlineDatePicker.minimumDate = Calendar.current.date(byAdding: .second,
+                                                                   value: 0,
+                                                                   to: notificationID!)
+        }
+        
         self.createTaskButton.addTarget(self, action: #selector(createTaskButtonTapped), for: .touchUpInside)
     }
     
@@ -165,7 +176,7 @@ class CreateTaskViewController: UIViewController, UITextViewDelegate {
                 print(error.localizedDescription)
             }
             
-            self.notifications.notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationID!])
+            self.notifications.remove(with: ["\(notificationID!)"])
             
             self.saveTask(withTitle: titleText,
                           description: description,

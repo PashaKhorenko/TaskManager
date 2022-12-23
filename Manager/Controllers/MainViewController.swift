@@ -212,22 +212,37 @@ extension MainViewController: UICollectionViewDelegate {
             }
         }
         let completedButtonTitle = taskCompletion ? "Not Completed" : "Completed"
-
+        
         return UIContextMenuConfiguration(actionProvider:  { [weak self] suggestedActions in
             return UIMenu(children: [
-                UIAction(title: completedButtonTitle, image: UIImage(systemName: "app.badge.checkmark")) { [weak self] _ in
-                    self?.setupCompletedButton(taskIndex)
-                },
-                UIAction(title: "Edit", image: UIImage(systemName: "highlighter")) { [weak self] _ in
-                    self?.setupEditButton(taskIndex)
-                },
-                UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { [weak self] _ in
-                    self?.setupDeleteButton(taskIndex)
-                }
+                
+                UIAction(title: completedButtonTitle,
+                         image: UIImage(systemName: "app.badge.checkmark"),
+                         handler: { [weak self] _ in
+                             self?.setupCompletedButton(taskIndex)
+                         }),
+                
+                UIAction(title: "Edit",
+                         image: UIImage(systemName: "highlighter"),
+                         handler: { [weak self] _ in
+                             self?.setupEditButton(taskIndex)
+                         }),
+                
+                UIAction(title: "Delete",
+                         image: UIImage(systemName: "trash"),
+                         attributes: .destructive,
+                         handler: { [weak self] _ in
+                             self?.setupDeleteButton(taskIndex)
+                         })
             ])
         })
     }
+}
 
+// Customizing buttons for UIContextMenu
+extension MainViewController {
+    
+    // MARK: Completed Button
     private func setupCompletedButton(_ taskIndex: Int) {
         let formatter = getDataFormatter()
         
@@ -240,7 +255,7 @@ extension MainViewController: UICollectionViewDelegate {
                 
                 let notificationID = "\(array[taskIndex].dateOfCreation!)"
                 
-                self.notifications.notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationID])
+                self.notifications.remove(with: [notificationID])
             } else {
                 self.notifications.sentNotification(for: array[taskIndex])
             }
@@ -265,6 +280,7 @@ extension MainViewController: UICollectionViewDelegate {
         }
     }
     
+    // MARK: Edit Button
     private func setupEditButton(_ taskIndex: Int) {
         var task: Task {
             switch prioritySegmentedControl.selectedSegmentIndex {
@@ -282,7 +298,7 @@ extension MainViewController: UICollectionViewDelegate {
         createTaskVC.descriptionTextView.text = task.descriptionText
         createTaskVC.isCompleted = task.completionStatus
         
-        createTaskVC.notificationID = "\(task.dateOfCreation!)"
+        createTaskVC.notificationID = task.dateOfCreation!
         createTaskVC.priorityKeyForEditing = Int(task.priority)
         createTaskVC.indexPathForEditing = taskIndex
         
@@ -291,6 +307,7 @@ extension MainViewController: UICollectionViewDelegate {
         self.navigationController?.pushViewController(createTaskVC, animated: true)
     }
     
+    // MARK: Delete Button
     private func setupDeleteButton(_ taskIndex: Int) {
         let alertController = UIAlertController(title: "Confirm the deletion",
                                                 message: "If you press the \"Delete\" button, this action cannot be undone.",
@@ -304,6 +321,11 @@ extension MainViewController: UICollectionViewDelegate {
             
             guard let array = try? context?.fetch(fetchRequest) else { return }
             
+            // Deleting notification request
+            let notificationID = array[taskIndex].dateOfCreation
+            self?.notifications.remove(with: ["\(notificationID!)"])
+            
+            // Deleting task on storage context
             context?.delete(array[taskIndex])
             
             do {
@@ -312,6 +334,7 @@ extension MainViewController: UICollectionViewDelegate {
                 print(error.localizedDescription)
             }
             
+            // Deleting task on UI
             switch self?.prioritySegmentedControl.selectedSegmentIndex {
             case 0: self?.criticalTasksArray.remove(at: taskIndex)
             case 1: self?.highTasksArray.remove(at: taskIndex)

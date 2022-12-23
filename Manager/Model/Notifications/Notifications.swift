@@ -76,6 +76,11 @@ class Notifications: NSObject {
         notificationCenter.setNotificationCategories([category])
     }
     
+    // MARK: - Remove Notifications
+    func remove(with id: [String]) {
+        self.notificationCenter.removePendingNotificationRequests(withIdentifiers: id)
+    }
+    
     // MARK: - Reminder
     func reminderAfter(_ time: timeEnum) {
         var identifierForRequest: String {
