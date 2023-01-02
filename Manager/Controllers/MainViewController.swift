@@ -10,25 +10,40 @@ import CoreData
 
 class MainViewController: UIViewController {
     
+    private let itemsPerRow: CGFloat = 1
+    private let sectionInserts = UIEdgeInsets(top: 10, left: 15, bottom: 0, right: 15)
+    
     let notifications = Notifications()
     
+    // MARK: - UI Elements
     private let prioritySegmentedControl = PrioritySegmentedControl(frame: .zero)
-        
-    private let tasksCollectionView: UICollectionView = {
-        let flowLayout: UICollectionViewFlowLayout = {
-            let layout = UICollectionViewFlowLayout()
-            layout.minimumInteritemSpacing = 5
-            layout.minimumLineSpacing = 10
-            layout.sectionInset = UIEdgeInsets(top: 3, left: 0, bottom: 5, right: 0)
-            return layout
-        }()
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
-        collectionView.backgroundColor = nil
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        
-        return collectionView
+      
+    
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.isPagingEnabled = true
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
     }()
+    
+    private let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 0
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    
+    private let criticalTaskCollectionView = TaskCollectionView(frame: .zero,
+                                                                collectionViewLayout: UICollectionViewFlowLayout())
+    private let highTaskCollectionView = TaskCollectionView(frame: .zero,
+                                                            collectionViewLayout: UICollectionViewFlowLayout())
+    private let mediumTaskCollectionView = TaskCollectionView(frame: .zero,
+                                                              collectionViewLayout: UICollectionViewFlowLayout())
+    private let lowTaskCollectionView = TaskCollectionView(frame: .zero,
+                                                           collectionViewLayout: UICollectionViewFlowLayout())
     
     // MARK: - Data
     
@@ -79,8 +94,9 @@ class MainViewController: UIViewController {
     
         setupNavigationBar()
         setupViews()
+        delegatesSetup()
+        dataSourceSetup()
         setConstreints()
-        setDelegates()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -99,7 +115,10 @@ class MainViewController: UIViewController {
         
         arrayFilling()
         
-        self.tasksCollectionView.reloadData()
+        self.criticalTaskCollectionView.reloadData()
+        self.highTaskCollectionView.reloadData()
+        self.mediumTaskCollectionView.reloadData()
+        self.lowTaskCollectionView.reloadData()
     }
     
     // MARK: - Views Settings
@@ -107,19 +126,42 @@ class MainViewController: UIViewController {
     private func setupViews() {
         self.view.backgroundColor = #colorLiteral(red: 0.6648817658, green: 0.7693511844, blue: 0.7778732181, alpha: 1)
         
-        
         view.addSubview(prioritySegmentedControl)
-        view.addSubview(tasksCollectionView)
+        view.addSubview(scrollView)
+        
+        scrollView.addSubview(stackView)
+        
+        stackView.addArrangedSubview(criticalTaskCollectionView)
+        stackView.addArrangedSubview(highTaskCollectionView)
+        stackView.addArrangedSubview(mediumTaskCollectionView)
+        stackView.addArrangedSubview(lowTaskCollectionView)
+        
+        registerUICollectionViewCells()
         
         prioritySegmentedControl.addTarget(self, action: #selector(priorityChanged(_:)), for: .valueChanged)
-        
-        tasksCollectionView.register(TasksCollectionViewCell.self, forCellWithReuseIdentifier: "TaskCell")
-        
     }
     
-    private func setDelegates() {
-        tasksCollectionView.dataSource = self
-        tasksCollectionView.delegate = self
+    private func registerUICollectionViewCells() {
+        self.criticalTaskCollectionView.register(TasksCollectionViewCell.self, forCellWithReuseIdentifier: "CriticalTaskCollectionViewCell")
+        self.highTaskCollectionView.register(TasksCollectionViewCell.self, forCellWithReuseIdentifier: "HighTaskCollectionViewCell")
+        self.mediumTaskCollectionView.register(TasksCollectionViewCell.self, forCellWithReuseIdentifier: "MediumTaskCollectionViewCell")
+        self.lowTaskCollectionView.register(TasksCollectionViewCell.self, forCellWithReuseIdentifier: "LowTaskCollectionViewCell")
+    }
+    
+    private func delegatesSetup() {
+        self.scrollView.delegate = self
+        
+        self.criticalTaskCollectionView.delegate = self
+        self.highTaskCollectionView.delegate = self
+        self.mediumTaskCollectionView.delegate = self
+        self.lowTaskCollectionView.delegate = self
+    }
+    
+    private func dataSourceSetup() {
+        self.criticalTaskCollectionView.dataSource = self
+        self.highTaskCollectionView.dataSource = self
+        self.mediumTaskCollectionView.dataSource = self
+        self.lowTaskCollectionView.dataSource = self
     }
     
     private func setupNavigationBar() {
@@ -139,7 +181,8 @@ class MainViewController: UIViewController {
     }
     
     @objc private func priorityChanged(_ sender: UISegmentedControl) {
-        self.tasksCollectionView.reloadData()
+        let xOffset = scrollView.bounds.width * CGFloat(sender.selectedSegmentIndex)
+        scrollView.setContentOffset(CGPointMake(xOffset,0), animated: true)
     }
     
 }
@@ -150,37 +193,39 @@ class MainViewController: UIViewController {
 extension MainViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch prioritySegmentedControl.selectedSegmentIndex {
-        case 0: return criticalTasksArray.count
-        case 1: return highTasksArray.count
-        case 2: return mediumTasksArray.count
+        switch collectionView {
+        case criticalTaskCollectionView: return criticalTasksArray.count
+        case highTaskCollectionView: return highTasksArray.count
+        case mediumTaskCollectionView: return mediumTasksArray.count
         default: return lowTasksArray.count
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TaskCell", for: indexPath) as? TasksCollectionViewCell else { return UICollectionViewCell() }
+        var cell = TasksCollectionViewCell()
         
-        var task: Task {
-            switch prioritySegmentedControl.selectedSegmentIndex {
-            case 0: return criticalTasksArray[indexPath.item]
-            case 1: return highTasksArray[indexPath.item]
-            case 2: return mediumTasksArray[indexPath.item]
-            default: return lowTasksArray[indexPath.item]
-            }
+        switch collectionView {
+        case criticalTaskCollectionView:
+            cell = cellConfigure(withId: "CriticalTaskCollectionViewCell", indexPath: indexPath, data: criticalTasksArray, for: collectionView)
+        case highTaskCollectionView:
+            cell = cellConfigure(withId: "HighTaskCollectionViewCell", indexPath: indexPath, data: highTasksArray, for: collectionView)
+        case mediumTaskCollectionView:
+            cell = cellConfigure(withId: "MediumTaskCollectionViewCell", indexPath: indexPath, data: mediumTasksArray, for: collectionView)
+        case lowTaskCollectionView:
+            cell = cellConfigure(withId: "LowTaskCollectionViewCell", indexPath: indexPath, data: lowTasksArray, for: collectionView)
+        default:
+            print("")
+            
         }
-        
-        cell.configure(for: task)
         
         return cell
     }
     
-    func someName(id: String, indexPath: IndexPath, data: [Task], collectionView: UICollectionView) -> TasksCollectionViewCell {
+    private func cellConfigure(withId id: String, indexPath: IndexPath, data: [Task], for collectionView: UICollectionView) -> TasksCollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: id, for: indexPath) as! TasksCollectionViewCell
         
-        let task = data[indexPath.item]
-        cell.configure(for: task)
+        cell.configure(for: data[indexPath.item])
         
         return cell
     }
@@ -276,7 +321,10 @@ extension MainViewController {
         
         do {
             try context.save()
-            self.tasksCollectionView.reloadData()
+            self.criticalTaskCollectionView.reloadData()
+            self.highTaskCollectionView.reloadData()
+            self.mediumTaskCollectionView.reloadData()
+            self.lowTaskCollectionView.reloadData()
         } catch let error {
             print(error.localizedDescription)
         }
@@ -340,14 +388,19 @@ extension MainViewController {
             
             // Deleting task on UI
             switch self.prioritySegmentedControl.selectedSegmentIndex {
-            case 0: self.criticalTasksArray.remove(at: taskIndex)
-            case 1: self.highTasksArray.remove(at: taskIndex)
-            case 2: self.mediumTasksArray.remove(at: taskIndex)
-            default: self.lowTasksArray.remove(at: taskIndex)
+            case 0:
+                self.criticalTasksArray.remove(at: taskIndex)
+                self.criticalTaskCollectionView.reloadData()
+            case 1:
+                self.highTasksArray.remove(at: taskIndex)
+                self.highTaskCollectionView.reloadData()
+            case 2:
+                self.mediumTasksArray.remove(at: taskIndex)
+                self.mediumTaskCollectionView.reloadData()
+            default:
+                self.lowTasksArray.remove(at: taskIndex)
+                self.lowTaskCollectionView.reloadData()
             }
-            
-            self.tasksCollectionView.reloadData()
-                        
         }
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
         
@@ -363,9 +416,29 @@ extension MainViewController {
 
 extension MainViewController: UICollectionViewDelegateFlowLayout {
     
+    // Сell size
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        CGSize(width: collectionView.bounds.width - 20,
-               height: collectionView.bounds.width / 2)
+        
+        let paddingWidth = sectionInserts.left * (itemsPerRow + 1)
+        let availableWidth = collectionView.frame.width - paddingWidth
+        
+        let widthPerItem = availableWidth / itemsPerRow
+        let heigthPerItem = widthPerItem / 2
+        
+        return CGSize(width: widthPerItem, height: heigthPerItem)
+    }
+    
+    // Indent the section outward
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return sectionInserts
+    }
+    
+    // Indentation within a section
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return sectionInserts.top
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return sectionInserts.top
     }
 }
 
@@ -383,15 +456,25 @@ extension MainViewController: UIScrollViewDelegate {
 extension MainViewController {
     private func setConstreints() {
         NSLayoutConstraint.activate([
-            prioritySegmentedControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
+            prioritySegmentedControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             prioritySegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
             prioritySegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
             
-            tasksCollectionView.topAnchor.constraint(equalTo: prioritySegmentedControl.bottomAnchor, constant: 10),
-            tasksCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5),
-            tasksCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
-            tasksCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.topAnchor.constraint(equalTo: prioritySegmentedControl.bottomAnchor, constant: 10),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            stackView.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
+            
+            criticalTaskCollectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            highTaskCollectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            mediumTaskCollectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            lowTaskCollectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
         ])
-        
     }
 }

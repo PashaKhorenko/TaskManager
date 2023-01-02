@@ -21,6 +21,7 @@
 		4616C53E29546D860014AE2A /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4616C53D29546D860014AE2A /* Notifications.swift */; };
 		462FECF72951A64C002EC4D9 /* Manager.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 462FECF52951A64C002EC4D9 /* Manager.xcdatamodeld */; };
 		4655373528EEE18A00A5EF1C /* CustomDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4655373428EEE18A00A5EF1C /* CustomDatePicker.swift */; };
+		4655F131296314080036C9E0 /* TaskCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4655F130296314080036C9E0 /* TaskCollectionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		4616C53D29546D860014AE2A /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		462FECF62951A64C002EC4D9 /* Manager.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Manager.xcdatamodel; sourceTree = "<group>"; };
 		4655373428EEE18A00A5EF1C /* CustomDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
+		4655F130296314080036C9E0 /* TaskCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCollectionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				21AEE2D82826C67100169939 /* PrioritySegmentedControl.swift */,
+				4655F130296314080036C9E0 /* TaskCollectionView.swift */,
 				211EE5AE28255A0000623523 /* Cells */,
 				216E2489282676460040CA1D /* CreateTaskVC */,
 			);
@@ -253,6 +256,7 @@
 				21AEE2DF2826CC8E00169939 /* DescriptionTextView.swift in Sources */,
 				216E2488282672100040CA1D /* CreateTaskViewController.swift in Sources */,
 				21AEE2D92826C67100169939 /* PrioritySegmentedControl.swift in Sources */,
+				4655F131296314080036C9E0 /* TaskCollectionView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

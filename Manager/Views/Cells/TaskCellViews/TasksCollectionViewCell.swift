@@ -91,8 +91,8 @@ class TasksCollectionViewCell: UICollectionViewCell {
         
         titleLabel.text = task.title
         descriptionLabel.text = task.descriptionText
-        dateOfCreationLabel.text = "Date of creation: \(formatter.string(from: task.dateOfCreation!))"
-        deadlineLabel.text = "Deadline: \(formatter.string(from: task.deadlineDate!))"
+        dateOfCreationLabel.text = "Date of creation: \(formatter.string(from: task.dateOfCreation ?? .now))"
+        deadlineLabel.text = "Deadline: \(formatter.string(from: task.deadlineDate ?? .now))"
     }
 }
 
