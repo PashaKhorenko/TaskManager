@@ -237,18 +237,32 @@ extension MainViewController: UICollectionViewDataSource {
 extension MainViewController: UICollectionViewDelegate {
     
     // Short pressure
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        setupEditButton(indexPath.item)
-    }
+//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        setupEditButton(indexPath.item)
+//    }
     
     // MARK: UIContextMenu
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
-
-        let taskIndex = indexPaths.first?[1]
-
-        guard let taskIndex else {
+        
+        guard let taskIndex = indexPaths.first?.item else {
             return UIContextMenuConfiguration()
         }
+        
+        var taskIndexForEditing: Int {
+            switch prioritySegmentedControl.selectedSegmentIndex {
+            case 0:
+                return taskIndex + lowTasksArray.count + mediumTasksArray.count + highTasksArray.count
+            case 1:
+                return taskIndex + lowTasksArray.count + mediumTasksArray.count
+            case 2:
+                return taskIndex + lowTasksArray.count
+            case 3:
+                return taskIndex
+            default:
+                return 0
+            }
+        }
+        print(taskIndexForEditing)
         
         var taskCompletion: Bool {
             switch prioritySegmentedControl.selectedSegmentIndex {
@@ -272,7 +286,7 @@ extension MainViewController: UICollectionViewDelegate {
                 UIAction(title: "Edit",
                          image: UIImage(systemName: "highlighter"),
                          handler: { [weak self] _ in
-                             self?.setupEditButton(taskIndex)
+                             self?.setupEditButton(taskIndex, indexForEditing: taskIndexForEditing)
                          }),
                 
                 UIAction(title: "Delete",
@@ -331,7 +345,7 @@ extension MainViewController {
     }
     
     // MARK: Edit Button
-    private func setupEditButton(_ taskIndex: Int) {
+    private func setupEditButton(_ taskIndex: Int, indexForEditing: Int) {
         var task: Task {
             switch prioritySegmentedControl.selectedSegmentIndex {
             case 0: return criticalTasksArray[taskIndex]
@@ -350,7 +364,7 @@ extension MainViewController {
         
         createTaskVC.notificationID = task.dateOfCreation!
         createTaskVC.priorityKeyForEditing = Int(task.priority)
-        createTaskVC.indexPathForEditing = taskIndex
+        createTaskVC.indexPathForEditing = indexForEditing
         
         createTaskVC.createTaskButton.tag = 2
         
